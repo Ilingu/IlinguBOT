@@ -1,0 +1,17 @@
+{
+  "name": "ilingubot",
+  "version": "1.0.0",
+  "description": "My BOT Discord who evol in future",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "Chollet Arthur",
+  "license": "ISC",
+  "dependencies": {
+    "@discordjs/uws": "^10.149.0",
+    "discord.js": "^11.5.1",
+    "dotenv": "^8.2.0",
+    "random-puppy": "^1.1.0"
+  }
+}
