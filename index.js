@@ -39,6 +39,7 @@ client.on("message", async message => {
   const cmd = args.shift().toLowerCase();
 
   if (cmd === "ping") {
+    if (message.deletable) message.delete();
     const msg = await message.channel.send(`🏓 Pinging...`);
     const ping = Math.round(client.ping);
 
@@ -144,6 +145,20 @@ client.on("message", async message => {
       .setTitle(`From r/${random} (Reddit)`)
       .setURL(`https://reddit.com/r/${random}`);
     message.channel.send(embed);
+  } else if (cmd === "niggerCovid") {
+    const embed = new RichEmbed()
+      .setColor("RANDOM")
+      .setImage(
+        "https://gisanddata.maps.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6"
+      )
+      .setTitle("Avancer du coronavirus")
+      .setURL(
+        "https://gisanddata.maps.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6"
+      );
+
+    message.channel.send(embed);
+  } else {
+    if (message.deletable) message.delete();
   }
 });
 
