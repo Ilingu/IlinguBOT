@@ -37,6 +37,12 @@ client.on("message", async (message) => {
     ) {
       message.channel.send("No u");
       return;
+    } else if (
+      message.content.toLowerCase() === "no" ||
+      message.content.toLowerCase() === "non"
+    ) {
+      if (message.deletable) message.delete();
+      return;
     } else {
       return;
     }
