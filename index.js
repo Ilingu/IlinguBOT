@@ -33,13 +33,20 @@ client.on("message", async (message) => {
   if (!message.content.startsWith(prefix)) {
     if (
       message.content.toLowerCase() === "ugay" ||
+      message.content.toLowerCase() === "you gay" ||
+      message.content.toLowerCase() === "yougay" ||
+      message.content.toLowerCase() === "you mom gay" ||
+      message.content.toLowerCase() === "u mom gay" ||
+      message.content.toLowerCase() === "u mom's gay" ||
       message.content.toLowerCase() === "u gay"
     ) {
       message.channel.send("No u");
       return;
     } else if (
       message.content.toLowerCase() === "no" ||
-      message.content.toLowerCase() === "non"
+      message.content.toLowerCase() === "non" ||
+      message.content.toLowerCase() === "nn" ||
+      message.content.toLowerCase() === "nan"
     ) {
       if (message.deletable) message.delete();
       return;
@@ -325,11 +332,11 @@ client.on("message", async (message) => {
     }
     const embed = new RichEmbed()
       .setColor("#ff0000")
-      .setThumbnail(toKick.user.displayAvatarURL)
+      .setThumbnail(toBan.user.displayAvatarURL)
       .setFooter(message.member.displayName, message.author.displayAvatarURL)
       .setTimestamp()
       .setDescription(
-        `❌ Baned member: **${toKick}** ❌\nBaned by : **${message.author}** (${
+        `❌ Baned member: **${toBan}** ❌\nBaned by : **${message.author}** (${
           message.author.id
         })✔\nReason : **${args.slice(1).join(" ")}**`
       );
@@ -337,7 +344,7 @@ client.on("message", async (message) => {
     const promptEmbed = new RichEmbed()
       .setColor("GREEN")
       .setAuthor("This verification becomes invalid after 30s")
-      .setDescription(`Do you want to ban ${toKick}`);
+      .setDescription(`Do you want to ban ${toBan}`);
 
     message.channel.send(promptEmbed).then(async (msg) => {
       const emoji = await promptMessage(msg, message.author, 30, ["✅", "❌"]);
@@ -345,7 +352,7 @@ client.on("message", async (message) => {
       if (emoji === "✅") {
         msg.delete();
 
-        toKick.kick(args.slice(1).join(" ")).catch((err) => {
+        toBan.kick(args.slice(1).join(" ")).catch((err) => {
           if (err)
             return message.channel.send(`Well..... Something went wrong?`);
         });
