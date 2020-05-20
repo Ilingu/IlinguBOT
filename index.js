@@ -46,7 +46,8 @@ client.on("message", async (message) => {
       message.content.toLowerCase() === "no" ||
       message.content.toLowerCase() === "non" ||
       message.content.toLowerCase() === "nn" ||
-      message.content.toLowerCase() === "nan"
+      message.content.toLowerCase() === "nan" ||
+      message.content.toLowerCase() === "na"
     ) {
       if (message.deletable) message.delete();
       return;
@@ -121,7 +122,6 @@ client.on("message", async (message) => {
 
       message.channel.send(embed);
     } else {
-      console.log(args[0].toLowerCase());
       message.channel.send(args.join(" "));
     }
   } else if (cmd === "rps") {
@@ -170,6 +170,51 @@ client.on("message", async (message) => {
       .setTitle(`From r/${random} (Reddit)`)
       .setURL(`https://reddit.com/r/${random}`);
     message.channel.send(embed);
+  } else if (cmd === "rda") {
+    if (message.deletable) message.delete();
+
+    const roleColor = message.guild.me.displayHexColor;
+
+    if (
+      args[0] !== undefined &&
+      args[1] !== undefined &&
+      args.length <= 2 &&
+      typeof parseInt(args[0]) === "number" &&
+      typeof parseInt(args[1]) === "number"
+    ) {
+      const Biggest = [parseInt(args[0]), parseInt(args[1])].sort();
+      const toRandomised = Biggest[0] - Biggest[1];
+
+      const embed = new RichEmbed()
+        .setColor(roleColor)
+        .setDescription(
+          `Résutat du nombre aléatoire entre ${
+            Biggest[0] < 0 && Biggest[1] < 0
+              ? Biggest[0]
+              : Biggest[0] < 0 || Biggest[1] < 0
+              ? Biggest[0]
+              : Biggest[1]
+          } et ${
+            Biggest[0] < 0 && Biggest[1] < 0
+              ? Biggest[1]
+              : Biggest[0] < 0 || Biggest[1] < 0
+              ? Biggest[1]
+              : Biggest[0]
+          }:
+              ${Biggest[1] + Math.round(Math.random() * toRandomised)}
+          `
+        )
+        .setTimestamp()
+        .setAuthor("Anonymous", message.author.displayAvatarURL)
+        .setFooter(client.user.username, client.user.displayAvatarURL);
+      message.channel.send(embed);
+    } else {
+      message.channel
+        .send(
+          "Il invoquer la commande _rda puis deux nombre dont le résultat sera compris.\n\t En outre ça doit ressembler à ça: _rda x x\n De plus tu n'a pas le droit à un 3ème x"
+        )
+        .then((m) => m.delete(5000));
+    }
   } else if (cmd === "kick") {
     const logChannel =
       message.guild.channels.find((c) => c.name === "logs") || message.channel;
