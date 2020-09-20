@@ -15,12 +15,12 @@ config({
 
 client.on("ready", () => {
   console.log(`I'm now online, my name is ${client.user.username}`);
-
+  client.user.setActivity("Gardien du Server", { url: "https://tytoux.yj.fr" });
   client.user.setPresence({
     status: "online",
     game: {
-      name: "Tes ambitions",
-      type: "LISTENING",
+      name: "_help",
+      type: "PLAYING",
     },
   });
 });
@@ -41,15 +41,6 @@ client.on("message", async (message) => {
       message.content.toLowerCase() === "u gay"
     ) {
       message.channel.send("No u");
-      return;
-    } else if (
-      message.content.toLowerCase() === "no" ||
-      message.content.toLowerCase() === "non" ||
-      message.content.toLowerCase() === "nn" ||
-      message.content.toLowerCase() === "nan" ||
-      message.content.toLowerCase() === "na"
-    ) {
-      if (message.deletable) message.delete();
       return;
     } else {
       return;
@@ -108,7 +99,7 @@ client.on("message", async (message) => {
         .setColor(roleColor)
         .setDescription(args.slice(1).join(" "))
         .setTimestamp()
-        .setAuthor(message.author.name, message.author.displayAvatarURL)
+        .setAuthor(message.author.username, message.author.displayAvatarURL)
         .setFooter(client.user.username, client.user.displayAvatarURL);
       message.channel.send(embed);
     } else if (args[0].toLowerCase() === "embedimg") {
@@ -117,7 +108,7 @@ client.on("message", async (message) => {
         .setDescription(args.slice(1).join(" "))
         .setTimestamp()
         .setImage(client.user.displayAvatarURL)
-        .setAuthor(message.author.name, message.author.displayAvatarURL)
+        .setAuthor(message.author.username, message.author.displayAvatarURL)
         .setFooter(client.user.username, client.user.displayAvatarURL);
 
       message.channel.send(embed);
@@ -159,6 +150,18 @@ client.on("message", async (message) => {
         return "Ooooo non, tu as perdu(e) !";
       }
     }
+  } else if (cmd === "help") {
+    const embed = `
+      _ping: affiche ton ping
+      _say <ton message>: dit un message de façon anonyme
+        _say embed <ton message>: dit un message avec un embed
+        _say embedimg <ton message>: dit in message avec un embed imagé
+      _rps: fait un fueilles-papier-ciseaux avec le bot
+      _meme: (à faire dans le salon meme) met un meme aléatoirement
+      _rda x x: te donne un nombre aléatoirement entre le 1er x et le 2ème, ex: _rda 5 8 (nombre aléatoire entre 5 et 8)
+      
+    `;
+    message.channel.send(embed);
   } else if (cmd === "meme") {
     const subReddits = ["dankmeme", "meme", "me_irl", "PewdiepieSubmissions"];
     const random = subReddits[Math.floor(Math.random() * subReddits.length)];
@@ -211,9 +214,9 @@ client.on("message", async (message) => {
     } else {
       message.channel
         .send(
-          "Il invoquer la commande _rda puis deux nombre dont le résultat sera compris.\n\t En outre ça doit ressembler à ça: _rda x x\n De plus tu n'a pas le droit à un 3ème x"
+          "_rda est un commande demandant 2 chiffres.\n\t En outre ça doit ressembler à ça: _rda x x\n EXEMPLE: _rda 5 9 (nombres aléatoire en 5 et 9)"
         )
-        .then((m) => m.delete(5000));
+        .then((m) => m.delete(15000));
     }
   } else if (cmd === "kick") {
     const logChannel =
