@@ -25,6 +25,27 @@ client.on("ready", () => {
   });
 });
 
+client.on("guildMemberAdd", (member) => {
+  const role = member.guild.roles.find("name", "Petit Frère");
+  member.addRole(role);
+   const subReddits = ["dankmeme", "meme", "me_irl", "PewdiepieSubmissions"];
+    const random = subReddits[Math.floor(Math.random() * subReddits.length)];
+
+    const img = await randomPuppy(random);
+    const embed = new RichEmbed()
+      .setColor("RANDOM")
+      .setImage(img)
+      .setTitle(`From r/${random} (Reddit)`)
+    .setURL(`https://reddit.com/r/${random}`);
+ 
+  member.sendMessage(`Bienvenue ${member.user.username} !\n${embed}`)
+});
+
+client.on("guildMemberRemove", (member) => {
+  member.addRole("Petit Frère");
+  member.sendMessage(`Au revoir ${member.user.username}\nCe fût de très bon moment que l'on a passé ensemble (non c'est totalement faux)`)
+});
+
 client.on("message", async (message) => {
   const prefix = "_";
 
@@ -159,7 +180,7 @@ client.on("message", async (message) => {
       _rps: fait un fueilles-papier-ciseaux avec le bot
       _meme: (à faire dans le salon meme) met un meme aléatoirement
       _rda x x: te donne un nombre aléatoirement entre le 1er x et le 2ème, ex: _rda 5 8 (nombre aléatoire entre 5 et 8)
-      
+
     `;
     message.channel.send(embed);
   } else if (cmd === "meme") {
