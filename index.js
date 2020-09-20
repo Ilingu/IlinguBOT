@@ -25,25 +25,27 @@ client.on("ready", () => {
   });
 });
 
-client.on("guildMemberAdd", (member) => {
+client.on("guildMemberAdd", async (member) => {
   const role = member.guild.roles.find("name", "Petit Frère");
   member.addRole(role);
-   const subReddits = ["dankmeme", "meme", "me_irl", "PewdiepieSubmissions"];
-    const random = subReddits[Math.floor(Math.random() * subReddits.length)];
+  const subReddits = ["dankmeme", "meme", "me_irl", "PewdiepieSubmissions"];
+  const random = subReddits[Math.floor(Math.random() * subReddits.length)];
 
-    const img = await randomPuppy(random);
-    const embed = new RichEmbed()
-      .setColor("RANDOM")
-      .setImage(img)
-      .setTitle(`From r/${random} (Reddit)`)
+  const img = await randomPuppy(random);
+  const embed = new RichEmbed()
+    .setColor("RANDOM")
+    .setImage(img)
+    .setTitle(`From r/${random} (Reddit)`)
     .setURL(`https://reddit.com/r/${random}`);
- 
-  member.sendMessage(`Bienvenue ${member.user.username} !\n${embed}`)
+
+  member.sendMessage(`Bienvenue ${member.user.username} !\n${embed}`);
 });
 
 client.on("guildMemberRemove", (member) => {
   member.addRole("Petit Frère");
-  member.sendMessage(`Au revoir ${member.user.username}\nCe fût de très bon moment que l'on a passé ensemble (non c'est totalement faux)`)
+  member.sendMessage(
+    `Au revoir ${member.user.username}\nCe fût de très bon moment que l'on a passé ensemble (non c'est totalement faux)`
+  );
 });
 
 client.on("message", async (message) => {
