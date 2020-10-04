@@ -42,10 +42,14 @@ client.on("guildMemberAdd", async (member) => {
 });
 
 client.on("guildMemberRemove", (member) => {
-  member.addRole("Petit Frère");
   member.sendMessage(
     `Au revoir ${member.user.username}\nCe fût de très bon moment que l'on a passé ensemble (non c'est totalement faux)`
   );
+});
+
+client.on("emojiCreate", (emoji) => {
+  const channel = emoji.guild.channels.find((ch) => ch.name === "annonces");
+  channel.send(`@everyone :\nUn nouvelle emoji a été ajouter (${emoji.name})`);
 });
 
 client.on("message", async (message) => {
@@ -55,15 +59,13 @@ client.on("message", async (message) => {
   if (!message.guild) return;
   if (!message.content.startsWith(prefix)) {
     if (
-      message.content.toLowerCase() === "ugay" ||
-      message.content.toLowerCase() === "you gay" ||
-      message.content.toLowerCase() === "yougay" ||
-      message.content.toLowerCase() === "you mom gay" ||
-      message.content.toLowerCase() === "u mom gay" ||
-      message.content.toLowerCase() === "u mom's gay" ||
-      message.content.toLowerCase() === "u gay"
+      message.channel.name === "meme" ||
+      message.channel.name === "ilingubot"
     ) {
-      message.channel.send("No u");
+      if (message.deletable) message.delete();
+      message.channel.send(
+        "Ce message n'a pas lieu d'être dans ce channel veuillez le mettre dans un channel approprié (exemple: dans le #meme on met toujours des commande _meme et pas de message normal qui eu sont destinés au #insulte)"
+      );
       return;
     } else {
       return;
