@@ -62,6 +62,10 @@ client.on("message", async (message) => {
       message.channel.name === "meme" ||
       message.channel.name === "ilingubot"
     ) {
+      const channel = message.guild.channels.find(
+        (ch) => ch.name === "insulte"
+      );
+      channel.send(`${message.author.username}:\n${message.content}`);
       if (message.deletable) message.delete();
       message.channel.send(
         "Ce message n'a pas lieu d'être dans ce channel veuillez le mettre dans un channel approprié (exemple: dans le #meme on met toujours des commande _meme et pas de message normal qui eu sont destinés au #insulte)"
