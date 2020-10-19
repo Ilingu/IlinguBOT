@@ -48,11 +48,11 @@ client.on("guildMemberRemove", (member) => {
 });
 
 client.on("emojiCreate", (emoji) => {
-  const channel = emoji.guild.channels.find((ch) => ch.name === "annonces");
+  const channel = emoji.guild.channels.find((ch) => ch.name === "annonces"),
+    role = emoji.guild.roles.find((r) => r.name === "everyone");
+
   channel.send(
-    `<@&${746260553319841812}> :\nUn nouvelle emoji a été ajouter (${
-      emoji.name
-    })`
+    `<@&${role.id}> :\nUn nouvelle emoji a été ajouter (${emoji.name})`
   );
 });
 
@@ -62,12 +62,14 @@ client.on("message", async (message) => {
   if (message.author.bot) return;
   if (!message.guild) return;
   if (!message.content.startsWith(prefix)) {
+    const role = message.guild.roles.find((r) => r.name === "everyone");
+
     if (message.channel.name === "annoces-prog") {
       const channel = message.guild.channels.find(
         (ch) => ch.name === "annonces"
       );
       channel.send(
-        `<@&${746260553319841812}> :\nUne nouvelle version de mon site https://myanimchecker.netlify.app/ vient d'être uploadé !`
+        `<@&${role.id}> :\nUne nouvelle version de mon site https://myanimchecker.netlify.app/ vient d'être uploadé !`
       );
     } else if (
       message.channel.name === "meme" ||
@@ -77,9 +79,7 @@ client.on("message", async (message) => {
         (ch) => ch.name === "insulte"
       );
       channel.send(
-        `<@&${746260553319841812}>\n<@${message.author.id}> a dit:\n${
-          message.content
-        }`
+        `<@&${role.id}>\n<@${message.author.id}> a dit:\n${message.content}`
       );
       if (message.deletable) message.delete();
       message.channel.send(
