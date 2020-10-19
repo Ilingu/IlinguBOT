@@ -51,12 +51,7 @@ client.on("guildMemberRemove", (member) => {
 
 client.on("emojiCreate", (emoji) => {
   const channel = emoji.guild.channels.find((ch) => ch.name === "annonces");
-  const myGuild = client.guilds.cache.get("746260553319841812");
-  const myRole = myGuild.roles.cache.find((role) => role.name === "everyone");
-
-  channel.send(
-    `<@&${myRole.id}> :\nUn nouvelle emoji a été ajouter (${emoji.name})`
-  );
+  channel.send(`Un nouvelle emoji a été ajouter (${emoji.name})`);
 });
 
 client.on("message", async (message) => {
@@ -65,14 +60,12 @@ client.on("message", async (message) => {
   if (message.author.bot) return;
   if (!message.guild) return;
   if (!message.content.startsWith(prefix)) {
-    const myGuild = client.guilds.cache.get("746260553319841812");
-    const myRole = myGuild.roles.cache.find((role) => role.name === "everyone");
     if (message.channel.name === "annoces-prog") {
       const channel = message.guild.channels.find(
         (ch) => ch.name === "annonces"
       );
       channel.send(
-        `<@&${myRole.id}> :\nUne nouvelle version de mon site https://myanimchecker.netlify.app/ vient d'être uploadé !`
+        `Une nouvelle version de mon site https://myanimchecker.netlify.app/ vient d'être uploadé !`
       );
     } else if (
       message.channel.name === "meme" ||
@@ -81,9 +74,7 @@ client.on("message", async (message) => {
       const channel = message.guild.channels.find(
         (ch) => ch.name === "insulte"
       );
-      channel.send(
-        `<@&${myRole.id}>\n<@${message.author.id}> a dit:\n${message.content}`
-      );
+      channel.send(`<@${message.author.id}> a dit:\n${message.content}`);
       if (message.deletable) message.delete();
       message.channel.send(
         "Ce message n'a pas lieu d'être dans ce channel veuillez le mettre dans un channel approprié (exemple: dans le #meme on met toujours des commande _meme et pas de message normal qui eu sont destinés au #insulte)"
