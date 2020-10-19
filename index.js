@@ -49,7 +49,11 @@ client.on("guildMemberRemove", (member) => {
 
 client.on("emojiCreate", (emoji) => {
   const channel = emoji.guild.channels.find((ch) => ch.name === "annonces");
-  channel.send(`@everyone :\nUn nouvelle emoji a été ajouter (${emoji.name})`);
+  channel.send(
+    `<@&${746260553319841812}> :\nUn nouvelle emoji a été ajouter (${
+      emoji.name
+    })`
+  );
 });
 
 client.on("message", async (message) => {
@@ -58,14 +62,25 @@ client.on("message", async (message) => {
   if (message.author.bot) return;
   if (!message.guild) return;
   if (!message.content.startsWith(prefix)) {
-    if (
+    if (message.channel.name === "annoces-prog") {
+      const channel = message.guild.channels.find(
+        (ch) => ch.name === "annonces"
+      );
+      channel.send(
+        `<@&${746260553319841812}> :\nUne nouvelle version de mon site https://myanimchecker.netlify.app/ vient d'être uploadé !`
+      );
+    } else if (
       message.channel.name === "meme" ||
       message.channel.name === "ilingubot"
     ) {
       const channel = message.guild.channels.find(
         (ch) => ch.name === "insulte"
       );
-      channel.send(`${message.author.username}:\n${message.content}`);
+      channel.send(
+        `<@&${746260553319841812}>\n<@${message.author.id}> a dit:\n${
+          message.content
+        }`
+      );
       if (message.deletable) message.delete();
       message.channel.send(
         "Ce message n'a pas lieu d'être dans ce channel veuillez le mettre dans un channel approprié (exemple: dans le #meme on met toujours des commande _meme et pas de message normal qui eu sont destinés au #insulte)"
