@@ -37,22 +37,23 @@ client.on("guildMemberAdd", async (member) => {
     .setImage(img)
     .setTitle(`From r/${random} (Reddit)`)
     .setURL(`https://reddit.com/r/${random}`);
+  const channel = message.guild.channels.find((ch) => ch.name === "annonces");
 
-  member.sendMessage(`Bienvenue ${member.user.username} !\n${embed}`);
+  channel.send(`Bienvenue ${member.user.username} !\n${embed}`);
 });
 
 client.on("guildMemberRemove", (member) => {
-  member.sendMessage(
+  const channel = message.guild.channels.find((ch) => ch.name === "annonces");
+  channel.send(
     `Au revoir ${member.user.username}\nCe fût de très bon moment que l'on a passé ensemble (non c'est totalement faux)`
   );
 });
 
 client.on("emojiCreate", (emoji) => {
-  const channel = emoji.guild.channels.find((ch) => ch.name === "annonces"),
-    role = emoji.guild.roles.find((r) => r.name === "everyone");
+  const channel = emoji.guild.channels.find((ch) => ch.name === "annonces");
 
   channel.send(
-    `<@&${role.id}> :\nUn nouvelle emoji a été ajouter (${emoji.name})`
+    `<@&${emoji.guild.roles.everyone.id}> :\nUn nouvelle emoji a été ajouter (${emoji.name})`
   );
 });
 
@@ -62,14 +63,12 @@ client.on("message", async (message) => {
   if (message.author.bot) return;
   if (!message.guild) return;
   if (!message.content.startsWith(prefix)) {
-    const role = message.guild.roles.find((r) => r.name === "everyone");
-
     if (message.channel.name === "annoces-prog") {
       const channel = message.guild.channels.find(
         (ch) => ch.name === "annonces"
       );
       channel.send(
-        `<@&${role.id}> :\nUne nouvelle version de mon site https://myanimchecker.netlify.app/ vient d'être uploadé !`
+        `<@&${message.guild.roles.everyone.id}> :\nUne nouvelle version de mon site https://myanimchecker.netlify.app/ vient d'être uploadé !`
       );
     } else if (
       message.channel.name === "meme" ||
@@ -79,7 +78,7 @@ client.on("message", async (message) => {
         (ch) => ch.name === "insulte"
       );
       channel.send(
-        `<@&${role.id}>\n<@${message.author.id}> a dit:\n${message.content}`
+        `<@&${message.guild.roles.everyone.id}>\n<@${message.author.id}> a dit:\n${message.content}`
       );
       if (message.deletable) message.delete();
       message.channel.send(
