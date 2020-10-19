@@ -60,7 +60,7 @@ client.on("message", async (message) => {
   if (message.author.bot) return;
   if (!message.guild) return;
   if (!message.content.startsWith(prefix)) {
-    if (message.channel.name === "annoces-prog") {
+    if (message.channel.name === "annonces-prog") {
       const channel = message.guild.channels.find(
         (ch) => ch.name === "annonces"
       );
