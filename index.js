@@ -39,21 +39,23 @@ client.on("guildMemberAdd", async (member) => {
     .setURL(`https://reddit.com/r/${random}`);
   const channel = message.guild.channels.find((ch) => ch.name === "annonces");
 
-  channel.send(`Bienvenue ${member.user.username} !\n${embed}`);
+  channel.send(`Bienvenue <@${member.user.id}> !\n${embed}`);
 });
 
 client.on("guildMemberRemove", (member) => {
   const channel = message.guild.channels.find((ch) => ch.name === "annonces");
   channel.send(
-    `Au revoir ${member.user.username}\nCe fût de très bon moment que l'on a passé ensemble (non c'est totalement faux)`
+    `Au revoir <@${member.user.id}>\nCe fût de très bon moment que l'on a passé ensemble (non c'est totalement faux)`
   );
 });
 
 client.on("emojiCreate", (emoji) => {
   const channel = emoji.guild.channels.find((ch) => ch.name === "annonces");
+  const myGuild = client.guilds.cache.get("746260553319841812");
+  const myRole = myGuild.roles.cache.find((role) => role.name === "everyone");
 
   channel.send(
-    `<@&${emoji.guild.roles.everyone.id}> :\nUn nouvelle emoji a été ajouter (${emoji.name})`
+    `<@&${myRole.id}> :\nUn nouvelle emoji a été ajouter (${emoji.name})`
   );
 });
 
@@ -63,12 +65,14 @@ client.on("message", async (message) => {
   if (message.author.bot) return;
   if (!message.guild) return;
   if (!message.content.startsWith(prefix)) {
+    const myGuild = client.guilds.cache.get("746260553319841812");
+    const myRole = myGuild.roles.cache.find((role) => role.name === "everyone");
     if (message.channel.name === "annoces-prog") {
       const channel = message.guild.channels.find(
         (ch) => ch.name === "annonces"
       );
       channel.send(
-        `<@&${message.guild.roles.everyone.id}> :\nUne nouvelle version de mon site https://myanimchecker.netlify.app/ vient d'être uploadé !`
+        `<@&${myRole.id}> :\nUne nouvelle version de mon site https://myanimchecker.netlify.app/ vient d'être uploadé !`
       );
     } else if (
       message.channel.name === "meme" ||
@@ -78,7 +82,7 @@ client.on("message", async (message) => {
         (ch) => ch.name === "insulte"
       );
       channel.send(
-        `<@&${message.guild.roles.everyone.id}>\n<@${message.author.id}> a dit:\n${message.content}`
+        `<@&${myRole.id}>\n<@${message.author.id}> a dit:\n${message.content}`
       );
       if (message.deletable) message.delete();
       message.channel.send(
