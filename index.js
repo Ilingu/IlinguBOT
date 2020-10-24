@@ -57,9 +57,7 @@ client.on("emojiCreate", (emoji) => {
 client.on("message", async (message) => {
   const prefix = "_";
 
-  if (message.author.bot) return;
-  if (!message.guild) return;
-  if (!message.content.startsWith(prefix)) {
+  if (message.author.bot) {
     if (message.channel.name === "annonces-prog") {
       const channel = message.guild.channels.find(
         (ch) => ch.name === "annonces"
@@ -67,7 +65,13 @@ client.on("message", async (message) => {
       channel.send(
         `Une nouvelle version de mon site https://myanimchecker.netlify.app/ vient d'être uploadé !`
       );
-    } else if (
+    } else {
+      return;
+    }
+  }
+  if (!message.guild) return;
+  if (!message.content.startsWith(prefix)) {
+    if (
       message.channel.name === "meme" ||
       message.channel.name === "ilingubot"
     ) {
