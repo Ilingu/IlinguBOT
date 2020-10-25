@@ -39,7 +39,7 @@ client.on("guildMemberAdd", async (member) => {
 
   const channel = member.guild.channels.find((ch) => ch.name === "annonces");
 
-  channel.send(`Bienvenue <@${member.user.id}> !\n${embed}`);
+  channel.send(`Bienvenue <@${member.user.id}> !`);
   channel.send(embed);
 });
 
