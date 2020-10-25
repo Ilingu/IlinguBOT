@@ -30,20 +30,19 @@ client.on("guildMemberAdd", async (member) => {
   member.addRole(role);
   const subReddits = ["dankmeme", "meme", "me_irl", "PewdiepieSubmissions"];
   const random = subReddits[Math.floor(Math.random() * subReddits.length)];
-
   const img = await randomPuppy(random);
   const embed = new RichEmbed()
     .setColor("RANDOM")
     .setImage(img)
     .setTitle(`From r/${random} (Reddit)`)
     .setURL(`https://reddit.com/r/${random}`);
-  const channel = message.guild.channels.find((ch) => ch.name === "annonces");
+  const channel = member.guild.channels.find((ch) => ch.name === "annonces");
 
   channel.send(`Bienvenue <@${member.user.id}> !\n${embed}`);
 });
 
 client.on("guildMemberRemove", (member) => {
-  const channel = message.guild.channels.find((ch) => ch.name === "annonces");
+  const channel = member.guild.channels.find((ch) => ch.name === "annonces");
   channel.send(
     `Au revoir <@${member.user.id}>\nCe fût de très bon moment que l'on a passé ensemble (non c'est totalement faux)`
   );
