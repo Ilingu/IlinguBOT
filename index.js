@@ -36,9 +36,11 @@ client.on("guildMemberAdd", async (member) => {
     .setImage(img)
     .setTitle(`From r/${random} (Reddit)`)
     .setURL(`https://reddit.com/r/${random}`);
+
   const channel = member.guild.channels.find((ch) => ch.name === "annonces");
 
   channel.send(`Bienvenue <@${member.user.id}> !\n${embed}`);
+  channel.send(embed);
 });
 
 client.on("guildMemberRemove", (member) => {
