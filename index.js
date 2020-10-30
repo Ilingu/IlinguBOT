@@ -66,6 +66,13 @@ client.on("message", async (message) => {
       channel.send(
         `Une nouvelle version de mon site https://myanimchecker.netlify.app/ vient d'être uploadé !`
       );
+    } else if (message.channel.name === "sortie-animes") {
+      const Role = message.guild.roles.find((r) => r.name === "Anime");
+      message.channel.send(
+        `<@&${Role}> un nouvelle épisode d'anime est sortie !`
+      );
+      message.channel.send(message.content);
+      if (message.deletable) message.delete();
     } else {
       return;
     }
