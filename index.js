@@ -59,6 +59,7 @@ client.on("message", async (message) => {
   const prefix = "_";
 
   if (message.author.bot) {
+    let ignored = false;
     if (message.channel.name === "annonces-prog") {
       const channel = message.guild.channels.find(
         (ch) => ch.name === "annonces"
@@ -66,14 +67,12 @@ client.on("message", async (message) => {
       channel.send(
         `Une nouvelle version de mon site https://myanimchecker.netlify.app/ vient d'être uploadé !`
       );
-    } else if (message.channel.name === "sortie-animes") {
+    } else if (message.channel.name === "sortie-animes" && !ignored) {
+      ignored = true;
       const Role = message.guild.roles.find((r) => r.name === "Anime");
-      message.channel.send(
-        `<@&${Role}> un nouvelle épisode d'anime est sortie !`
-      );
-      message.channel.send(message.content);
-      if (message.deletable) message.delete();
+      message.channel.send(`${Role} un nouvelle épisode d'anime est sortie !`);
     } else {
+      if (ignored) ignored = false;
       return;
     }
   }
