@@ -68,7 +68,7 @@ client.on("message", async (message) => {
       );
     } else if (message.channel.name === "sortie-animes") {
       const channel = message.guild.channels.find(
-        (ch) => ch.name === "sortie-animes"
+        (ch) => ch.name === "annonces"
       );
       const Role = message.guild.roles.find((r) => r.name === "Anime");
       channel.send(`${Role} un nouvelle épisode d'anime est sortie !`);
