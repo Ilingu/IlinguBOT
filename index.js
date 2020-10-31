@@ -9,6 +9,8 @@ const client = new Client({
   disableEveryone: true,
 });
 
+let ignored = false;
+
 config({
   path: __dirname + "/.env",
 });
@@ -66,13 +68,12 @@ client.on("message", async (message) => {
       channel.send(
         `Une nouvelle version de mon site https://myanimchecker.netlify.app/ vient d'être uploadé !`
       );
-    } else if (message.channel.name === "sortie-animes") {
-      const channel = message.guild.channels.find(
-        (ch) => ch.name === "annonces"
-      );
+    } else if (message.channel.name === "sortie-animes" && !ignored) {
+      ignored = true;
       const Role = message.guild.roles.find((r) => r.name === "Anime");
-      channel.send(`${Role} un nouvelle épisode d'anime est sortie !`);
+      message.channel.send(`${Role} un nouvelle épisode d'anime est sortie !`);
     } else {
+      if (ignored) ignored = false;
       return;
     }
   }
