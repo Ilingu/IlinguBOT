@@ -153,7 +153,7 @@ client.on("message", async (message) => {
       return message.reply(Embed);
     }
 
-    if (args[1].toLowerCase() === "neutrale") {
+    if (argsVote[1].toLowerCase() === "neutrale") {
       msgArgs = argsVote.slice(2).join(" ");
       Neutrale = true;
     } else {
@@ -163,7 +163,7 @@ client.on("message", async (message) => {
     message.channel
       .send(
         `📝 **${msgArgs}** ( Sondage de <@${message.author.id}> )${
-          Neutrale ? `\n🅰 pour l'option 1 et 🅱 pour l'option 2` : null
+          Neutrale ? `\n🅰 pour l'option 1 et 🅱 pour l'option 2` : ""
         }`
       )
       .then((messageReaction) => {
