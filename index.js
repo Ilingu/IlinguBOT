@@ -215,6 +215,7 @@ client.on("message", async (message) => {
       .setTitle(`From r/${random} (Reddit)`)
       .setURL(`https://reddit.com/r/${random}`);
     message.channel.send(embed);
+    if (message.deletable) message.delete();
   } else if (cmd === "rda") {
     if (message.deletable) message.delete();
 
