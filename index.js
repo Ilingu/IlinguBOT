@@ -135,7 +135,7 @@ client.on("message", async (message) => {
       .setTitle("Initialisation du sondage")
       .setDescription("_vote <ton sondage?>: pour initialiser ton sondage");
 
-    if (!args[1]) {
+    if (!argsVote[1]) {
       return message.reply(Embed);
     }
 
