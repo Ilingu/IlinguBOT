@@ -73,6 +73,13 @@ client.on("message", async (message) => {
   }
   if (!message.guild) return;
   if (!message.content.startsWith(prefix)) {
+    if (message.channel.name === "sondages") {
+      const Embed = new RichEmbed()
+        .setColor(0xffc300)
+        .setTitle("Initialisation du sondage")
+        .setDescription("_vote <ton sondage?>: pour initialiser ton sondage");
+      return message.reply(Embed);
+    }
     // if (message.channel.name === "meme") {
     //   const channel = message.guild.channels.find(
     //     (ch) => ch.name === "général"
@@ -141,11 +148,13 @@ client.on("message", async (message) => {
 
     let msgArgs = argsVote.slice(1).join(" ");
 
-    message.channel.send(`📝 **${msgArgs}**`).then((messageReaction) => {
-      messageReaction.react("👍");
-      messageReaction.react("👎");
-      if (message.deletable) message.delete().catch(console.error);
-    });
+    message.channel
+      .send(`📝 **${msgArgs}** ( Sondage de <@${message.author.id}> )`)
+      .then((messageReaction) => {
+        messageReaction.react("👍");
+        messageReaction.react("👎");
+        if (message.deletable) message.delete().catch(console.error);
+      });
   } else if (cmd === "say") {
     if (message.deletable) message.delete();
 
