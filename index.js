@@ -45,9 +45,12 @@ client.on("guildMemberAdd", async (member) => {
   channel.send(embed);
 });
 
-client.on("emojiCreate", (emoji) => {
+client.on("emojiCreate", async (emoji) => {
   const channel = emoji.guild.channels.find((ch) => ch.name === "général");
-  channel.send(`Un nouvelle emoji a été ajouter (${emoji.name})`);
+  const Author = await emoji.fetchAuthor();
+  channel.send(
+    `Un nouvelle emoji a été ajouter ( emoji: <:${emoji.name}:${emoji.id}> ajouter par: <@${Author.username}> )`
+  );
 });
 
 client.on("message", async (message) => {
@@ -137,7 +140,10 @@ client.on("message", async (message) => {
       );
     }
   } else if (cmd === "vote") {
+    // Add Vote sans oui ou non juste on vote se qu'on préfère
     let argsVote = message.content.substring(prefix.length).split(" ");
+    let msgArgs;
+    let Neutrale = false;
     const Embed = new RichEmbed()
       .setColor(0xffc300)
       .setTitle("Initialisation du sondage")
@@ -147,13 +153,28 @@ client.on("message", async (message) => {
       return message.reply(Embed);
     }
 
-    let msgArgs = argsVote.slice(1).join(" ");
+    if (args[1].toLowerCase() === "neutrale") {
+      msgArgs = argsVote.slice(2).join(" ");
+      Neutrale = true;
+    } else {
+      msgArgs = argsVote.slice(1).join(" ");
+    }
 
     message.channel
-      .send(`📝 **${msgArgs}** ( Sondage de <@${message.author.id}> )`)
+      .send(
+        `📝 **${msgArgs}** ( Sondage de <@${message.author.id}> )${
+          Neutrale ? `\n🅰 pour l'option 1 et 🅱 pour l'option 2` : null
+        }`
+      )
       .then((messageReaction) => {
-        messageReaction.react("👍");
-        messageReaction.react("👎");
+        if (Neutrale) {
+          messageReaction.react("🅰");
+          messageReaction.react("🅱");
+        } else {
+          messageReaction.react("👍");
+          messageReaction.react("👎");
+        }
+
         if (message.deletable) message.delete().catch(console.error);
       });
   } else if (cmd === "say") {
