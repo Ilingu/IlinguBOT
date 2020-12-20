@@ -9,7 +9,7 @@ const client = new Client({
   disableEveryone: true,
 });
 
-let ignored = false;
+// let ignored = false;
 
 config({
   path: __dirname + "/.env",
@@ -28,7 +28,7 @@ client.on("ready", () => {
 });
 
 client.on("guildMemberAdd", async (member) => {
-  const role = member.guild.roles.find("name", "Petit Frère");
+  const role = member.guild.roles.find("name", "Dieux du Stream");
   member.addRole(role);
   const subReddits = ["dankmeme", "meme", "me_irl", "PewdiepieSubmissions"];
   const random = subReddits[Math.floor(Math.random() * subReddits.length)];
@@ -39,21 +39,14 @@ client.on("guildMemberAdd", async (member) => {
     .setTitle(`From r/${random} (Reddit)`)
     .setURL(`https://reddit.com/r/${random}`);
 
-  const channel = member.guild.channels.find((ch) => ch.name === "annonces");
+  const channel = member.guild.channels.find((ch) => ch.name === "bienvenue");
 
   channel.send(`Bienvenue <@${member.user.id}> !`);
   channel.send(embed);
 });
 
-client.on("guildMemberRemove", (member) => {
-  const channel = member.guild.channels.find((ch) => ch.name === "annonces");
-  channel.send(
-    `Au revoir <@${member.user.id}>\nCe fût de très bon moment que l'on a passé ensemble (non c'est totalement faux)`
-  );
-});
-
 client.on("emojiCreate", (emoji) => {
-  const channel = emoji.guild.channels.find((ch) => ch.name === "annonces");
+  const channel = emoji.guild.channels.find((ch) => ch.name === "général");
   channel.send(`Un nouvelle emoji a été ajouter (${emoji.name})`);
 });
 
@@ -61,40 +54,39 @@ client.on("message", async (message) => {
   const prefix = "_";
 
   if (message.author.bot) {
-    if (message.channel.name === "annonces-prog") {
-      const channel = message.guild.channels.find(
-        (ch) => ch.name === "annonces"
-      );
-      channel.send(
-        `Une nouvelle version de mon site https://myanimchecker.netlify.app/ vient d'être uploadé !`
-      );
-    } else if (message.channel.name === "sortie-animes" && !ignored) {
-      ignored = true;
-      const Role = message.guild.roles.find((r) => r.name === "Anime");
-      message.channel.send(`${Role} un nouvelle épisode d'anime est sortie !`);
-    } else {
-      if (ignored) ignored = false;
-      return;
-    }
+    // if (message.channel.name === "annonces-prog") {
+    //   const channel = message.guild.channels.find(
+    //     (ch) => ch.name === "annonces"
+    //   );
+    //   channel.send(
+    //     `Une nouvelle version de mon site https://myanimchecker.netlify.app/ vient d'être uploadé !`
+    //   );
+    // } else if (message.channel.name === "sortie-animes" && !ignored) {
+    //   ignored = true;
+    //   const Role = message.guild.roles.find((r) => r.name === "Anime");
+    //   message.channel.send(`${Role} un nouvelle épisode d'anime est sortie !`);
+    // } else {
+    //   if (ignored) ignored = false;
+    //   return;
+    // }
+    return;
   }
   if (!message.guild) return;
   if (!message.content.startsWith(prefix)) {
-    if (
-      message.channel.name === "meme" ||
-      message.channel.name === "ilingubot"
-    ) {
-      const channel = message.guild.channels.find(
-        (ch) => ch.name === "insulte"
-      );
-      channel.send(`<@${message.author.id}> a dit:\n${message.content}`);
-      if (message.deletable) message.delete();
-      message.channel.send(
-        "Ce message n'a pas lieu d'être dans ce channel veuillez le mettre dans un channel approprié (exemple: dans le #meme on met toujours des commande _meme et pas de message normal qui eu sont destinés au #insulte)"
-      );
-      return;
-    } else {
-      return;
-    }
+    // if (message.channel.name === "meme") {
+    //   const channel = message.guild.channels.find(
+    //     (ch) => ch.name === "général"
+    //   );
+    //   channel.send(`<@${message.author.id}> a dit:\n${message.content}`);
+    //   if (message.deletable) message.delete();
+    //   message.channel.send(
+    //     "Ce message n'a pas lieu d'être dans ce channel veuillez le mettre dans un channel approprié (exemple: dans le #meme on met toujours des commande _meme et pas de message normal qui eu sont destinés au #insulte)"
+    //   );
+    //   return;
+    // } else {
+    //   return;
+    // }
+    return;
   }
 
   const args = message.content.slice(prefix.length).trim().split(/ +/g);
