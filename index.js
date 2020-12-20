@@ -74,6 +74,7 @@ client.on("message", async (message) => {
   if (!message.guild) return;
   if (!message.content.startsWith(prefix)) {
     if (message.channel.name === "sondages") {
+      if (message.deletable) message.delete();
       const Embed = new RichEmbed()
         .setColor(0xffc300)
         .setTitle("Initialisation du sondage")
