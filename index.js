@@ -128,6 +128,24 @@ client.on("message", async (message) => {
         }s ❌ pour faire une requête et que la réponse te parvienne 😢😢😢`
       );
     }
+  } else if (cmd === "vote") {
+    let argsVote = message.content.substring(prefix.length).split(" ");
+    const Embed = new RichEmbed()
+      .setColor(0xffc300)
+      .setTitle("Initialisation du sondage")
+      .setDescription("_vote <ton sondage?>: pour initialiser ton sondage");
+
+    if (!args[1]) {
+      return message.reply(Embed);
+    }
+
+    let msgArgs = argsVote.slice(1).join(" ");
+
+    message.channel.send(`📝 **${msgArgs}**`).then((messageReaction) => {
+      messageReaction.react("👍");
+      messageReaction.react("👎");
+      if (message.deletable) message.delete().catch(console.error);
+    });
   } else if (cmd === "say") {
     if (message.deletable) message.delete();
 
