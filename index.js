@@ -3,17 +3,23 @@ const { config } = require("dotenv");
 const { promptMessage } = require("./functions");
 const randomPuppy = require("random-puppy");
 
-const chooseArr = ["⛰", "🧻", "✂"];
-
+// Config
 const client = new Client({
   disableEveryone: true,
 });
-
-// let ignored = false;
-
 config({
   path: __dirname + "/.env",
 });
+
+// Game
+const SnakeGame = require("./Game/Snake");
+
+// Var
+const chooseArr = ["⛰", "🧻", "✂"];
+// let ignored = false;
+
+// Game Config
+const snakeGameInst = new SnakeGame(client);
 
 client.on("ready", () => {
   console.log(`I'm now online, my name is ${client.user.username}`);
@@ -177,6 +183,8 @@ client.on("message", async (message) => {
 
         if (message.deletable) message.delete().catch(console.error);
       });
+  } else if (cmd === "snake") {
+    snakeGameInst.newGame(msg);
   } else if (cmd === "say") {
     if (message.deletable) message.delete();
 
@@ -242,17 +250,29 @@ client.on("message", async (message) => {
       }
     }
   } else if (cmd === "help") {
-    const embed = `
+    if (message.deletable) message.delete();
+    const Embed = new RichEmbed()
+      .setColor(0xffc300)
+      .setTitle("Comment utiliser IlinguBOT ?")
+      .setDescription(
+        `
       _ping: affiche ton ping
       _say <ton message>: dit un message de façon anonyme
         _say embed <ton message>: dit un message avec un embed
         _say embedimg <ton message>: dit in message avec un embed imagé
-      _rps: fait un fueilles-papier-ciseaux avec le bot
+      _rps: fait un fueilles-papier-ciseaux avec le bot*
+      _vote <ton sondage>: crée un sondage avec une réponse oui et une réponse non (soit d'accord soit pas d'accord)
+        _vote neutrale <ton sondage>: crée un sondage avec une option A et une option B (choisir l'option que vous préférez,ex: Snk ou One Piece)
+      _snake: joue au jeu du snake !
       _meme: (à faire dans le salon meme) met un meme aléatoirement
       _rda x x: te donne un nombre aléatoirement entre le 1er x et le 2ème, ex: _rda 5 8 (nombre aléatoire entre 5 et 8)
+    `
+      )
+      .setTimestamp()
+      .setAuthor(message.author.username, message.author.displayAvatarURL)
+      .setFooter(client.user.username, client.user.displayAvatarURL);
 
-    `;
-    message.channel.send(embed);
+    return message.reply(Embed);
   } else if (cmd === "meme") {
     const subReddits = ["dankmeme", "meme", "me_irl", "PewdiepieSubmissions"];
     const random = subReddits[Math.floor(Math.random() * subReddits.length)];
