@@ -184,7 +184,7 @@ client.on("message", async (message) => {
         if (message.deletable) message.delete().catch(console.error);
       });
   } else if (cmd === "snake") {
-    snakeGameInst.newGame(msg);
+    snakeGameInst.newGame(message);
   } else if (cmd === "say") {
     if (message.deletable) message.delete();
 
