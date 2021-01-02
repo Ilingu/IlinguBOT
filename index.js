@@ -193,18 +193,6 @@ client.on("message", async (message) => {
         if (message.deletable) message.delete().catch(console.error);
       });
   } else if (cmd === "rename") {
-    if (message.guild.me.permissions.missing("MANAGE_NICKNAMES"))
-      return message
-        .reply("Tu n'as pas la permission de faire ça !")
-        .then((m) => m.delete(5000));
-
-    if (message.author.id === message.guild.ownerID)
-      return message
-        .reply(
-          "Je ne peux pas changer ton pseudo Master !\n(En vrai, t'as un grade au dessus de moi donc j'peux pas)"
-        )
-        .then((m) => m.delete(5000));
-
     if (args.length < 1)
       return message
         .reply(
