@@ -26,7 +26,7 @@ const getUserFromMention = (mention) => {
       mention = mention.slice(1);
     }
 
-    return client.users.cache.get(mention);
+    return client.users.get(mention);
   }
 };
 
@@ -225,7 +225,7 @@ client.on("message", async (message) => {
           )
           .then((m) => m.delete(5000));
 
-      const user = getUserFromMention(args[1]);
+      const user = getUserFromMention(message.mentions.members.first());
       if (!user) {
         return message
           .reply(
@@ -234,6 +234,7 @@ client.on("message", async (message) => {
           .then((m) => m.delete(5000));
       }
       message.guild.members.get(user.id).setNickname(args.slice(2).join(" "));
+      user.send("Pseudo changé dans GameTeam");
       return message.channel.send(
         `<@${user.id}> votre nouveaux pseudo est: ${args
           .slice(2)
