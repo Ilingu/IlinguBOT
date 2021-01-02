@@ -322,9 +322,9 @@ client.on("message", async (message) => {
         `
       _ping: affiche ton ping
       _say <ton message>: dit un message de façon anonyme
-      _rename <ton nouveaux pseudo> (ex: _rename Ilingu)
-      \t_rename bot <nouveaux pseudo du bot> (ex: _rename bot Ilingu)
-      \t_rename others <@personne> <nouveaux pseudo de la personne mentionné> (ex: _rename others @Ilingu être suprême)
+      _rename <ton nouveaux pseudo> : change ton pseudo (ex: _rename Ilingu)
+      \t_rename bot <nouveaux pseudo du bot> : Change le pseudo du bot (ex: _rename bot Ilingu)
+      \t_rename others <@personne> <nouveaux pseudo de la personne mentionné> : change le pseudo de la personne mentionné (ex: _rename others @Ilingu être suprême)
       \t_say embed <ton message>: dit un message avec un embed
       \t_say embedimg <ton message>: dit in message avec un embed imagé
       _rps: fait un fueilles-papier-ciseaux avec le bot*
