@@ -150,7 +150,7 @@ client.on("message", async (message) => {
       .setDescription("_vote <ton sondage?>: pour initialiser ton sondage");
 
     if (!argsVote[1]) {
-      return message.reply(Embed);
+      return message.reply(Embed).then((m) => m.delete(5000));
     }
 
     if (argsVote[1].toLowerCase() === "neutrale") {
@@ -177,6 +177,59 @@ client.on("message", async (message) => {
 
         if (message.deletable) message.delete().catch(console.error);
       });
+  } else if (cmd === "rename") {
+    if (args.length < 1)
+      return message
+        .reply(
+          "No name ? => _rename (bot, others) <ton nouveaux pseudo> (ex: _rename Ilingu)"
+        )
+        .then((m) => m.delete(5000));
+
+    if (args[0].toLowerCase() === "bot") {
+      if (!args[1])
+        return message
+          .reply(
+            "No name ? => _rename bot <nouveaux pseudo du bot> (ex: _rename bot Ilingu)"
+          )
+          .then((m) => m.delete(5000));
+      message.guild.members
+        .get(client.user.id)
+        .setNickname(args.slice(1).join(" "));
+      return message.channel.send(
+        `<@${client.user.id}> votre nouveaux pseudo est: ${args
+          .slice(1)
+          .join(
+            " "
+          )}\n(J'suis littéralement entrain de me parler à moi même 😥)\n(De plus je sais même pas si le pseudo qu'on m'a donné est bien ou pas vu que je suis pas un IA)`
+      );
+    } else if (args[0].toLowerCase() === "others") {
+      if (!args[1] || !args[2])
+        return message
+          .reply(
+            "No name ? => _rename others <@personne> <nouveaux pseudo du bot> (ex: _rename others @Ilingu être suprême)"
+          )
+          .then((m) => m.delete(5000));
+      message.guild.members.get(args[1]).setNickname(args.slice(2).join(" "));
+      return message.channel.send(
+        `<@${args[1]}> votre nouveaux pseudo est: ${args
+          .slice(2)
+          .join(
+            " "
+          )}\n(En espérant qu'on t'a pas donné un pseudo trop rincé 😥)`
+      );
+    }
+
+    if (!message.guild.me.hasPermission("MANAGE_NICKNAMES"))
+      return message
+        .reply("Tu n'as pas la permission de faire ça !")
+        .then((m) => m.delete(5000));
+
+    message.guild.members.get(message.author.id).setNickname(args.join(" "));
+    message.channel.send(
+      `<@${message.author.id}> votre nouveaux pseudo est: ${args.join(
+        " "
+      )}\n(Mais tu le savais déjà, donc je suis inutile 😥)`
+    );
   } else if (cmd === "say") {
     if (message.deletable) message.delete();
 
@@ -250,6 +303,9 @@ client.on("message", async (message) => {
         `
       _ping: affiche ton ping
       _say <ton message>: dit un message de façon anonyme
+      _rename <ton nouveaux pseudo> (ex: _rename Ilingu)
+      \t_rename bot <nouveaux pseudo du bot> (ex: _rename bot Ilingu)
+      \t_rename others <@personne> <nouveaux pseudo de la personne mentionné> (ex: _rename others @Ilingu être suprême)
       \t_say embed <ton message>: dit un message avec un embed
       \t_say embedimg <ton message>: dit in message avec un embed imagé
       _rps: fait un fueilles-papier-ciseaux avec le bot*
