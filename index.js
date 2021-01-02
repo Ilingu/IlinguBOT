@@ -225,7 +225,7 @@ client.on("message", async (message) => {
           )
           .then((m) => m.delete(5000));
 
-      const user = getUserFromMention(message.mentions.members.first());
+      const user = getUserFromMention(args[1]);
       if (!user) {
         return message
           .reply(
