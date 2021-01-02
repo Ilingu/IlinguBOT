@@ -15,6 +15,21 @@ config({
 const chooseArr = ["⛰", "🧻", "✂"];
 // let ignored = false;
 
+// Fn
+const getUserFromMention = (mention) => {
+  if (!mention) return;
+
+  if (mention.startsWith("<@") && mention.endsWith(">")) {
+    mention = mention.slice(2, -1);
+
+    if (mention.startsWith("!")) {
+      mention = mention.slice(1);
+    }
+
+    return client.users.cache.get(mention);
+  }
+};
+
 client.on("ready", () => {
   console.log(`I'm now online, my name is ${client.user.username}`);
   client.user.setActivity("Gardien du Server", { url: "https://tytoux.yj.fr" });
@@ -178,6 +193,18 @@ client.on("message", async (message) => {
         if (message.deletable) message.delete().catch(console.error);
       });
   } else if (cmd === "rename") {
+    if (message.guild.me.permissions.missing("MANAGE_NICKNAMES"))
+      return message
+        .reply("Tu n'as pas la permission de faire ça !")
+        .then((m) => m.delete(5000));
+
+    if (message.author.id === message.guild.ownerID)
+      return message
+        .reply(
+          "Je ne peux pas changer ton pseudo Master !\n(En vrai, t'as un grade au dessus de moi donc j'peux pas)"
+        )
+        .then((m) => m.delete(5000));
+
     if (args.length < 1)
       return message
         .reply(
@@ -209,9 +236,18 @@ client.on("message", async (message) => {
             "No name ? => _rename others <@personne> <nouveaux pseudo du bot> (ex: _rename others @Ilingu être suprême)"
           )
           .then((m) => m.delete(5000));
-      message.guild.members.get(args[1]).setNickname(args.slice(2).join(" "));
+
+      const user = getUserFromMention(args[1]);
+      if (!user) {
+        return message
+          .reply(
+            `👻Personne fantôme👻\nJe cite: "${args[1]}" est inexistant sur ce serveur !`
+          )
+          .then((m) => m.delete(5000));
+      }
+      message.guild.members.get(user.id).setNickname(args.slice(2).join(" "));
       return message.channel.send(
-        `<@${args[1]}> votre nouveaux pseudo est: ${args
+        `<@${user.id}> votre nouveaux pseudo est: ${args
           .slice(2)
           .join(
             " "
@@ -219,12 +255,7 @@ client.on("message", async (message) => {
       );
     }
 
-    if (!message.guild.me.hasPermission("MANAGE_NICKNAMES"))
-      return message
-        .reply("Tu n'as pas la permission de faire ça !")
-        .then((m) => m.delete(5000));
-
-    message.guild.members.get(message.author.id).setNickname(args.join(" "));
+    message.member.setNickname(args.join(" "));
     message.channel.send(
       `<@${message.author.id}> votre nouveaux pseudo est: ${args.join(
         " "
