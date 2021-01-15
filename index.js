@@ -90,6 +90,9 @@ client.on("message", async (message) => {
     return;
   }
   if (!message.guild) return;
+  if (message.attachments.filesize > 0) {
+    if (message.deletable) message.delete(60000);
+  }
   if (!message.content.startsWith(prefix)) {
     if (message.channel.name === "sondages") {
       if (message.deletable) message.delete();
