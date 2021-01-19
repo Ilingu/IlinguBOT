@@ -32,13 +32,8 @@ const getUserFromMention = (mention) => {
 
 client.on("ready", () => {
   console.log(`I'm now online, my name is ${client.user.username}`);
-  client.user.setActivity("Gardien du Server", { url: "https://tytoux.yj.fr" });
-  client.user.setPresence({
-    status: "online",
-    game: {
-      name: "_help",
-      type: "PLAYING",
-    },
+  client.user.setActivity("Gardien du Server: _help", {
+    url: "https://tytoux.yj.fr",
   });
 });
 
