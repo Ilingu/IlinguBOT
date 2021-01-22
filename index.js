@@ -84,7 +84,12 @@ client.on("message", async (message) => {
     // }
     return;
   }
-  if (!message.guild) return;
+  if (!message.guild) {
+    // DM
+    message.reply(
+      "Comment te dire que t'es dans mon espace privée là... Baaaaaka\n Genre on ta jamais appris à respecter la vie privée des gens."
+    );
+  }
   if (message.attachments.size > 0) {
     if (message.deletable) message.delete(162000000);
   }
