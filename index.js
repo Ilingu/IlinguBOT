@@ -93,7 +93,8 @@ client.on("message", async (message) => {
     (message.content.split("/")[0] === "http:" ||
       message.content.split("/")[0] === "https:") &&
     (message.content.split("/")[2] === "www.youtube.com" ||
-      message.content.split("/")[2] === "youtu.be") &&
+      message.content.split("/")[2] === "youtu.be" ||
+      message.content.split("/")[2] === "twitter.com") &&
     message.channel.name !== "🔗partage"
   ) {
     const channelPartage = message.guild.channels.find(
