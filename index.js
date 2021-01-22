@@ -38,7 +38,7 @@ client.on("ready", () => {
 });
 
 client.on("guildMemberAdd", async (member) => {
-  const role = member.guild.roles.find("name", "Dieux du Stream");
+  const role = member.guild.roles.find("name", "Gros gamer");
   member.addRole(role);
   const subReddits = ["dankmeme", "meme", "me_irl", "PewdiepieSubmissions"];
   const random = subReddits[Math.floor(Math.random() * subReddits.length)];
@@ -49,14 +49,14 @@ client.on("guildMemberAdd", async (member) => {
     .setTitle(`From r/${random} (Reddit)`)
     .setURL(`https://reddit.com/r/${random}`);
 
-  const channel = member.guild.channels.find((ch) => ch.name === "bienvenue");
+  const channel = member.guild.channels.find((ch) => ch.name === "🖐bienvenue");
 
   channel.send(`Bienvenue <@${member.user.id}> !`);
   channel.send(embed);
 });
 
 client.on("emojiCreate", async (emoji) => {
-  const channel = emoji.guild.channels.find((ch) => ch.name === "général");
+  const channel = emoji.guild.channels.find((ch) => ch.name === "💬général");
   const Author = await emoji.fetchAuthor();
   channel.send(
     `Un nouveau emoji a été ajouté ( emoji: <:${emoji.name}:${emoji.id}> ajouter par: <@${Author.id}> )`
