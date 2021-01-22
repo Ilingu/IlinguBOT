@@ -68,6 +68,7 @@ client.on("emojiCreate", async (emoji) => {
 
 client.on("message", async (message) => {
   const prefix = "_";
+  const args = message.content.slice(prefix.length).trim().split(/ +/g);
   const cmd = args.shift().toLowerCase();
 
   if (message.author.bot) {
@@ -168,8 +169,6 @@ client.on("message", async (message) => {
     // }
     return;
   }
-
-  const args = message.content.slice(prefix.length).trim().split(/ +/g);
 
   if (cmd === "ping") {
     if (message.deletable) message.delete();
