@@ -86,7 +86,29 @@ client.on("message", async (message) => {
   }
   if (!message.guild) return;
   if (message.attachments.size > 0) {
-    if (message.deletable) message.delete(5400000);
+    if (message.deletable) message.delete(129600000);
+  }
+  if (
+    typeof message.content === "string" &&
+    (message.content.split("/")[0] === "http:" ||
+      message.content.split("/")[0] === "https:") &&
+    (message.content.split("/")[2] === "www.youtube.com" ||
+      message.content.split("/")[2] === "youtu.be") &&
+    message.channel.name !== "partage"
+  ) {
+    const channelPartage = message.guild.channels.find(
+      (ch) => ch.name === "partage"
+    );
+
+    channel.send(`(Message de <@${message.author.id}>)\n${message.content}`);
+
+    message
+      .reply(
+        `Votre message a été déplacé dans <#${channelPartage.id}> car il s'agit d'un lien youtube.`
+      )
+      .then((m) => m.delete(5000));
+    if (message.deletable) message.delete();
+    return;
   }
   if (!message.content.startsWith(prefix)) {
     if (message.channel.name === "sondages") {
