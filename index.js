@@ -94,10 +94,10 @@ client.on("message", async (message) => {
       message.content.split("/")[0] === "https:") &&
     (message.content.split("/")[2] === "www.youtube.com" ||
       message.content.split("/")[2] === "youtu.be") &&
-    message.channel.name !== "partage"
+    message.channel.name !== "🔗partage"
   ) {
     const channelPartage = message.guild.channels.find(
-      (ch) => ch.name === "partage"
+      (ch) => ch.name === "🔗partage"
     );
 
     channelPartage.send(
