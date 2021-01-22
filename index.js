@@ -86,7 +86,7 @@ client.on("message", async (message) => {
   }
   if (!message.guild) return;
   if (message.attachments.size > 0) {
-    if (message.deletable) message.delete(129600000);
+    if (message.deletable) message.delete(162000000);
   }
   if (
     typeof message.content === "string" &&
