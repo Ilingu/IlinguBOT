@@ -108,7 +108,6 @@ client.on("message", async (message) => {
         }`
       );
     }
-
     return;
   }
   if (message.attachments.size > 0) {
@@ -451,20 +450,6 @@ client.on("message", async (message) => {
         )
         .then((m) => m.delete(15000));
     }
-  } else if (cmd === "fuck") {
-    client.fetchUser(message.author.id, false).then((user) => {
-      user.send(
-        `Yaaaaa !\nDe 1 Bravo Pour Avoir Trouvé Le Résultat Du Brain Fuck (#DecodeurEnLigne...)\nDe 2 ça ne s'arrête pas là... (ça serait trop simple uwu)\nhttps://www.gillmeister-software.com/online-tools/text/encrypt-decrypt-text.aspx\nfwByNN8BGRJfJreYo4JDcjEt/kV4i1GF7Dio1a51KoIB0xwRyamFZMRc49anKviYFraz4i8knUsL1G/JBepTKlWmURqFgFTRzySjoDZ7Ms7NFRHqCZprcCW1CU4BcKnX`
-      );
-    });
-  } else if (cmd === "seins") {
-    client.fetchUser(message.author.id, false).then((user) => {
-      user.send(
-        `Ok ok GG, franchement GG fallait le trouver... je suis tellement étonné que je suis presque sûr que personne ne liras ce message, c'est paradoxale vu que t'es entrain de le lire\nBref envoie moi (Ilingu) ce message et je te donnerais ce que tu veux DANS LA LIMITE DU RESONNABLE (genre un rôle discord ou jsp quoi).\n Code: ${Date.now()}, Utilisateur qui as trouvé: ${
-          message.author.username
-        }`
-      );
-    });
   } else {
     if (message.deletable) message.delete();
   }
