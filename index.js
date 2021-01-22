@@ -107,7 +107,13 @@ client.on("message", async (message) => {
 
     message
       .reply(
-        `Votre message a été déplacé dans <#${channelPartage.id}> car il s'agit d'un lien youtube.`
+        `Votre message a été déplacé dans <#${
+          channelPartage.id
+        }> car il s'agit d'un lien ${
+          message.content.split("/")[2] === "twitter.com"
+            ? "twitter"
+            : "youtube"
+        }.`
       )
       .then((m) => m.delete(5000));
     if (message.deletable) message.delete();
