@@ -56,7 +56,7 @@ client.on("guildMemberAdd", async (member) => {
 });
 
 client.on("emojiCreate", async (emoji) => {
-  const channel = emoji.guild.channels.find((ch) => ch.name === "💬général");
+  const channel = emoji.guild.channels.find((ch) => ch.name === "annonces");
   const Author = await emoji.fetchAuthor();
   channel.send(
     `Un nouveau emoji a été ajouté ( emoji: <:${emoji.name}:${emoji.id}> ajouter par: <@${Author.id}> )`
