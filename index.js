@@ -32,10 +32,12 @@ const getUserFromMention = (mention) => {
 
 client.on("ready", () => {
   console.log(`I'm now online, my name is ${client.user.username}`);
-  client.user.setActivity("Gardien du Server: _help", {
-    type: "STREAMING",
-    url: "https://tytoux.yj.fr/",
-  });
+  client.user.setActivity(
+    "++++++++++[>+>+++>+++++++>++++++++++<<<<-]>>>>-----.+++++++.+++++++++++++++.------------------.++++++++.",
+    {
+      type: "LISTENING",
+    }
+  );
 });
 
 client.on("guildMemberAdd", async (member) => {
@@ -66,6 +68,7 @@ client.on("emojiCreate", async (emoji) => {
 
 client.on("message", async (message) => {
   const prefix = "_";
+  const cmd = args.shift().toLowerCase();
 
   if (message.author.bot) {
     // if (message.channel.name === "annonces-prog") {
@@ -87,9 +90,26 @@ client.on("message", async (message) => {
   }
   if (!message.guild) {
     // DM
-    message.reply(
-      "Comment te dire que t'es dans mon espace privée là... Baaaaaka\n Genre on ta jamais appris à respecter la vie privée des gens."
-    );
+    if (!message.content.startsWith(prefix))
+      return message.reply(
+        "Comment te dire que t'es dans mon espace privée là... Baaaaaka\n Genre on ta jamais appris à respecter la vie privée des gens."
+      );
+
+    if (cmd === "fuck") {
+      return message.reply(
+        `Yaaaaa !\nDe 1 Bravo Pour Avoir Trouvé Le Résultat Du Brain Fuck (#DecodeurEnLigne...)\nDe 2 ça ne s'arrête pas là... (ça serait trop simple uwu)\nhttps://www.gillmeister-software.com/online-tools/text/encrypt-decrypt-text.aspx\nfwByNN8BGRJfJreYo4JDcjEt/kV4i1GF7Dio1a51KoIB0xwRyamFZMRc49anKviYFraz4i8knUsL1G/JBepTKlWmURqFgFTRzySjoDZ7Ms7NFRHqCZprcCW1CU4BcKnX`
+      );
+    }
+
+    if (cmd === "seins") {
+      return message.reply(
+        `Ok ok GG, franchement GG fallait le trouver... je suis tellement étonné que je suis presque sûr que personne ne liras ce message, c'est paradoxale vu que t'es entrain de le lire\nBref envoie moi (Ilingu) ce message et je te donnerais ce que tu veux DANS LA LIMITE DU RESONNABLE (genre un rôle discord ou jsp quoi).\n Code: ${Date.now()}, Utilisateur qui as trouvé: ${
+          message.author.username
+        }`
+      );
+    }
+
+    return;
   }
   if (message.attachments.size > 0) {
     if (message.deletable) message.delete(162000000);
@@ -151,7 +171,6 @@ client.on("message", async (message) => {
   }
 
   const args = message.content.slice(prefix.length).trim().split(/ +/g);
-  const cmd = args.shift().toLowerCase();
 
   if (cmd === "ping") {
     if (message.deletable) message.delete();
@@ -432,6 +451,20 @@ client.on("message", async (message) => {
         )
         .then((m) => m.delete(15000));
     }
+  } else if (cmd === "fuck") {
+    client.fetchUser(message.author.id, false).then((user) => {
+      user.send(
+        `Yaaaaa !\nDe 1 Bravo Pour Avoir Trouvé Le Résultat Du Brain Fuck (#DecodeurEnLigne...)\nDe 2 ça ne s'arrête pas là... (ça serait trop simple uwu)\nhttps://www.gillmeister-software.com/online-tools/text/encrypt-decrypt-text.aspx\nfwByNN8BGRJfJreYo4JDcjEt/kV4i1GF7Dio1a51KoIB0xwRyamFZMRc49anKviYFraz4i8knUsL1G/JBepTKlWmURqFgFTRzySjoDZ7Ms7NFRHqCZprcCW1CU4BcKnX`
+      );
+    });
+  } else if (cmd === "seins") {
+    client.fetchUser(message.author.id, false).then((user) => {
+      user.send(
+        `Ok ok GG, franchement GG fallait le trouver... je suis tellement étonné que je suis presque sûr que personne ne liras ce message, c'est paradoxale vu que t'es entrain de le lire\nBref envoie moi (Ilingu) ce message et je te donnerais ce que tu veux DANS LA LIMITE DU RESONNABLE (genre un rôle discord ou jsp quoi).\n Code: ${Date.now()}, Utilisateur qui as trouvé: ${
+          message.author.username
+        }`
+      );
+    });
   } else {
     if (message.deletable) message.delete();
   }
