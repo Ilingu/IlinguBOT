@@ -100,7 +100,9 @@ client.on("message", async (message) => {
       (ch) => ch.name === "partage"
     );
 
-    channel.send(`(Message de <@${message.author.id}>)\n${message.content}`);
+    channelPartage.send(
+      `(Message de <@${message.author.id}>)\n${message.content}`
+    );
 
     message
       .reply(
