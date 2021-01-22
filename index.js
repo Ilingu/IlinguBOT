@@ -33,7 +33,8 @@ const getUserFromMention = (mention) => {
 client.on("ready", () => {
   console.log(`I'm now online, my name is ${client.user.username}`);
   client.user.setActivity("Gardien du Server: _help", {
-    url: "https://tytoux.yj.fr",
+    type: "STREAMING",
+    url: "https://tytoux.yj.fr/",
   });
 });
 
