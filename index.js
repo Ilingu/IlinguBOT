@@ -144,10 +144,13 @@ client.on("message", async (message) => {
   const EmojiDistri = message.guild.emojis.find(
     (emoji) => emoji.name == "distribuer"
   );
-  message.react(message.guild.emojis.get(EmojiDistri.id));
-  setTimeout(() => {
-    message.reactions.remove(message.author);
-  }, 1000);
+  message
+    .react(message.guild.emojis.get(EmojiDistri.id))
+    .then((messageReaction) => {
+      setTimeout(() => {
+        messageReaction.remove();
+      }, 1000);
+    });
   // ------
   if (!message.content.startsWith(prefix)) {
     if (message.channel.name === "sondages") {
