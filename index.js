@@ -123,7 +123,7 @@ client.on("message", async (message) => {
     (message.content.split("/")[0] === "http:" ||
       message.content.split("/")[0] === "https:") &&
     message.channel.name !== "🔗partage" &&
-    !message.embeds
+    !message.content.includes("tenor")
   ) {
     const channelPartage = message.guild.channels.find(
       (ch) => ch.name === "🔗partage"
