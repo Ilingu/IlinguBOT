@@ -146,7 +146,7 @@ client.on("message", async (message) => {
   );
   message.react(message.guild.emojis.get(EmojiDistri.id));
   setTimeout(() => {
-    message.reactions.remove();
+    message.reactions.remove(message.author);
   }, 1000);
   // ------
   if (!message.content.startsWith(prefix)) {
