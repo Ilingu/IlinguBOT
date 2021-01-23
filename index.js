@@ -122,7 +122,8 @@ client.on("message", async (message) => {
     typeof message.content === "string" &&
     (message.content.split("/")[0] === "http:" ||
       message.content.split("/")[0] === "https:") &&
-    message.channel.name !== "🔗partage"
+    message.channel.name !== "🔗partage" &&
+    !message.embeds
   ) {
     const channelPartage = message.guild.channels.find(
       (ch) => ch.name === "🔗partage"
@@ -141,16 +142,16 @@ client.on("message", async (message) => {
     return;
   }
   // Distribué
-  const EmojiDistri = message.guild.emojis.find(
-    (emoji) => emoji.name == "distribuer"
-  );
-  message
-    .react(message.guild.emojis.get(EmojiDistri.id))
-    .then((messageReaction) => {
-      setTimeout(() => {
-        messageReaction.remove();
-      }, 1000);
-    });
+  // const EmojiDistri = message.guild.emojis.find(
+  //   (emoji) => emoji.name == "distribuer"
+  // );
+  // message
+  //   .react(message.guild.emojis.get(EmojiDistri.id))
+  //   .then((messageReaction) => {
+  //     setTimeout(() => {
+  //       messageReaction.remove();
+  //     }, 1000);
+  //   });
   // ------
   if (!message.content.startsWith(prefix)) {
     if (message.channel.name === "sondages") {
