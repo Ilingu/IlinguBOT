@@ -73,7 +73,7 @@ client.on("message", async (message) => {
 
   if (message.channel.name === "annonces") {
     const EmojiVu = message.guild.emojis.find((emoji) => emoji.name == "Vu");
-    message.react(`<:Vu:${EmojiVu.id}>`);
+    message.react(message.guild.emojis.get(EmojiVu.id));
   }
   if (message.author.bot) {
     // if (message.channel.name === "annonces-prog") {
@@ -144,9 +144,9 @@ client.on("message", async (message) => {
   const EmojiDistri = message.guild.emojis.find(
     (emoji) => emoji.name == "distribuer"
   );
-  message.react(`<:distribuer:${EmojiDistri.id}>`);
+  message.react(message.guild.emojis.get(EmojiDistri.id));
   setTimeout(() => {
-    message.reactions.get(`<:distribuer:${EmojiDistri.id}>`).remove();
+    message.reactions.remove();
   }, 1000);
   // ------
   if (!message.content.startsWith(prefix)) {
