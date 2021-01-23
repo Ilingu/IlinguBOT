@@ -71,6 +71,10 @@ client.on("message", async (message) => {
   const args = message.content.slice(prefix.length).trim().split(/ +/g);
   const cmd = args.shift().toLowerCase();
 
+  if (message.channel.name === "annonces") {
+    const EmojiVu = message.guild.emojis.find((emoji) => emoji.name == "Vu");
+    message.react(`<:Vu:${EmojiVu.id}>`);
+  }
   if (message.author.bot) {
     // if (message.channel.name === "annonces-prog") {
     //   const channel = message.guild.channels.find(
@@ -136,6 +140,15 @@ client.on("message", async (message) => {
     if (message.deletable) message.delete();
     return;
   }
+  // Distribué
+  const EmojiDistri = message.guild.emojis.find(
+    (emoji) => emoji.name == "distribuer"
+  );
+  message.react(`<:distribuer:${EmojiDistri.id}>`);
+  setTimeout(() => {
+    message.reactions.get(`<:distribuer:${EmojiDistri.id}>`).remove();
+  }, 1000);
+  // ------
   if (!message.content.startsWith(prefix)) {
     if (message.channel.name === "sondages") {
       if (message.deletable) message.delete();
