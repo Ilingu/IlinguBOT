@@ -112,15 +112,12 @@ client.on("message", async (message) => {
     return;
   }
   if (message.attachments.size > 0) {
-    if (message.deletable) message.delete(162000000);
+    if (message.deletable) message.delete(3600000);
   }
   if (
     typeof message.content === "string" &&
     (message.content.split("/")[0] === "http:" ||
       message.content.split("/")[0] === "https:") &&
-    (message.content.split("/")[2] === "www.youtube.com" ||
-      message.content.split("/")[2] === "youtu.be" ||
-      message.content.split("/")[2] === "twitter.com") &&
     message.channel.name !== "🔗partage"
   ) {
     const channelPartage = message.guild.channels.find(
@@ -133,15 +130,9 @@ client.on("message", async (message) => {
 
     message
       .reply(
-        `Votre message a été déplacé dans <#${
-          channelPartage.id
-        }> car il s'agit d'un lien ${
-          message.content.split("/")[2] === "twitter.com"
-            ? "twitter"
-            : "youtube"
-        }.`
+        `Votre message a été déplacé dans <#${channelPartage.id}> car il s'agit d'un lien.`
       )
-      .then((m) => m.delete(5000));
+      .then((m) => m.delete(7000));
     if (message.deletable) message.delete();
     return;
   }
