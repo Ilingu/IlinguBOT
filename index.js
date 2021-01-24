@@ -71,6 +71,9 @@ client.on("message", async (message) => {
   const args = message.content.slice(prefix.length).trim().split(/ +/g);
   const cmd = args.shift().toLowerCase();
 
+  if (message.attachments.size > 0) {
+    if (message.deletable) message.delete(3600000);
+  }
   if (message.channel.name === "annonces") {
     const EmojiVu = message.guild.emojis.find((emoji) => emoji.name == "Vu");
     message.react(message.guild.emojis.get(EmojiVu.id));
@@ -114,9 +117,6 @@ client.on("message", async (message) => {
       );
     }
     return;
-  }
-  if (message.attachments.size > 0) {
-    if (message.deletable) message.delete(3600000);
   }
   if (
     typeof message.content === "string" &&
