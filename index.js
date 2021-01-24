@@ -120,8 +120,13 @@ client.on("message", async (message) => {
   }
   if (
     typeof message.content === "string" &&
-    (message.content.split("/")[0] === "http:" ||
-      message.content.split("/")[0] === "https:") &&
+    (message.content
+      .split("/")[0]
+      .slice(0, message.content.split("/")[0].length - 1) === "http" ||
+      message.content
+        .split("/")[0]
+        .slice(0, message.content.split("/")[0].length - 1) === "https" ||
+      message.content.split(".")[0] === "www") &&
     message.channel.name !== "🔗partage" &&
     !message.content.includes("tenor")
   ) {
