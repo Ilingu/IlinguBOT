@@ -189,7 +189,7 @@ client.on("message", async (message) => {
     const ping = Date.now() - message.createdTimestamp;
 
     msg.edit(
-      `🏓 Pong\n✔✔ Ping est donc de **${ping} ms** ✔✔\nPS: Un ping supérieur à 125ms devient problèmatique\n*(Ping client **${Math.floor(
+      `🏓 Pong\n✔✔ Votre Ping est de **${ping} ms** ✔✔\nPS: Un ping supérieur à 125ms devient problèmatique\n*(Ping client **${Math.floor(
         msg.createdAt - message.createdAt
       )} ms** -> à part si vous connaissez il ne vous servira à rien...)*`
     );
