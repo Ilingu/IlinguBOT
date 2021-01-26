@@ -186,39 +186,13 @@ client.on("message", async (message) => {
   if (cmd === "ping") {
     if (message.deletable) message.delete();
     const msg = await message.channel.send(`🏓 Pinging...`);
-    const ping = Math.round(client.ping);
+    const ping = Date.now() - message.createdTimestamp;
 
-    if (ping <= 50) {
-      msg.edit(
-        `🏓 Pong\n✔✔Ping client ${Math.floor(
-          msg.createdAt - message.createdAt
-        )}\n✔✔Ton ping est donc de ${ping}ms soit ${
-          ping / 1000
-        }s => Ta un très bon ping`
-      );
-    } else if (ping > 50 && ping <= 100) {
-      msg.edit(
-        `🏓 Pong\n✔Ping client ${Math.floor(
-          msg.createdAt - message.createdAt
-        )}\n✔Ton ping est donc de ${ping}ms soit ${
-          ping / 1000
-        }s => Ta un bon ping`
-      );
-    } else if (ping > 100 && ping <= 350) {
-      msg.edit(
-        `🏓 Pong\n🆗Ping client ${Math.floor(
-          msg.createdAt - message.createdAt
-        )}\n🆗Ton ping est donc de ${ping}ms soit ${
-          ping / 1000
-        }s => Ton ping est moyen`
-      );
-    } else {
-      msg.edit(
-        `🏓 Pong\n ❌ ouïe ça doit piquer ton ping est de ${ping}ms\n soit ${
-          ping / 1000
-        }s ❌ pour faire une requête et que la réponse te parvienne 😢😢😢`
-      );
-    }
+    msg.edit(
+      `🏓 Pong\n✔✔ Ping est donc de **${ping} ms** ✔✔\nPS: Un ping supérieur à 125ms devient problèmatique\n*(Ping client **${Math.floor(
+        msg.createdAt - message.createdAt
+      )} ms** -> à part si vous connaissez il ne vous servira à rien...)*`
+    );
   } else if (cmd === "vote") {
     // Add Vote sans oui ou non juste on vote se qu'on préfère
     let argsVote = message.content.substring(prefix.length).split(" ");
@@ -435,19 +409,7 @@ client.on("message", async (message) => {
       const embed = new RichEmbed()
         .setColor(roleColor)
         .setDescription(
-          `Résutat du nombre aléatoire entre ${
-            Biggest[0] < 0 && Biggest[1] < 0
-              ? Biggest[0]
-              : Biggest[0] < 0 || Biggest[1] < 0
-              ? Biggest[0]
-              : Biggest[1]
-          } et ${
-            Biggest[0] < 0 && Biggest[1] < 0
-              ? Biggest[1]
-              : Biggest[0] < 0 || Biggest[1] < 0
-              ? Biggest[1]
-              : Biggest[0]
-          }:
+          `Résutat du nombre aléatoire entre ${Biggest[0]} et ${Biggest[1]}:
               ${Biggest[1] + Math.round(Math.random() * toRandomised)}
           `
         )
