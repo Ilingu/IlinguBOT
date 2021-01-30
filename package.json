@@ -15,6 +15,8 @@
     "@discordjs/uws": "^10.149.0",
     "discord.js": "^11.5.1",
     "dotenv": "^8.2.0",
+    "firebase": "^8.2.5",
+    "firebase-admin": "^9.4.2",
     "random-puppy": "^1.1.0"
   }
 }

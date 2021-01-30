@@ -1,7 +1,19 @@
 const { Client, RichEmbed } = require("discord.js");
 const { config } = require("dotenv");
+const firebase = require("firebase/app");
+const admin = require("firebase-admin");
 const { promptMessage } = require("./functions");
 const randomPuppy = require("random-puppy");
+
+// Initialize Firebase
+const serviceAccount = require("./serviceAccount.json");
+const FieldValue = require("firebase-admin").firestore.FieldValue;
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
+
+const db = admin.firestore();
 
 // Config
 const client = new Client({
@@ -30,6 +42,23 @@ const getUserFromMention = (mention) => {
   }
 };
 
+const UpdateMessage = (AllMessage, channel, MessageID) => {
+  // 172800000 -> Ms of 2day
+
+  db.collection("guilds")
+    .doc(guild)
+    .update({
+      messageImageToSuppr:
+        AllMessage === false
+          ? [{ channel, MessageID, TimeStamp: Date.now() + 60000 }]
+          : [
+              ...Data.messageImageToSuppr,
+              { channel, MessageID, TimeStamp: Date.now() + 60000 },
+            ],
+    });
+};
+
+// BOT
 client.on("ready", () => {
   console.log(`I'm now online, my name is ${client.user.username}`);
   client.user.setActivity(
@@ -66,14 +95,38 @@ client.on("emojiCreate", async (emoji) => {
   );
 });
 
+client.on("guildCreate", async (gData) => {
+  db.collection("guilds").doc(gData.id).set({
+    guildID: gData.id,
+    guildName: gData.name,
+    messageImageToSuppr: [],
+  });
+});
+
 client.on("message", async (message) => {
   const prefix = "_";
   const args = message.content.slice(prefix.length).trim().split(/ +/g);
   const cmd = args.shift().toLowerCase();
 
   if (message.attachments.size > 0) {
-    if (message.deletable) message.delete(3600000);
+    let guild = message.guild.id,
+      channel = message.channel.id,
+      MessageID = message.id;
+    db.collection("guilds")
+      .doc(guild)
+      .get()
+      .then((doc) => {
+        if (doc.exists) {
+          const Data = doc.data();
+          UpdateMessage(Data, channel, MessageID);
+        } else {
+          console.log("No such document!");
+          UpdateMessage(false, channel, MessageID);
+        }
+      })
+      .catch(console.error);
   }
+
   if (message.channel.name === "annonces") {
     const EmojiVu = message.guild.emojis.find((emoji) => emoji.name == "Vu");
     message.react(message.guild.emojis.get(EmojiVu.id));
