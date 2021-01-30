@@ -29,16 +29,15 @@ const chooseArr = ["⛰", "🧻", "✂"];
 // Fn
 const POSTMessage = (AllMessage, channel, MessageID, guild) => {
   // 172800000 -> Ms of 2day
-
   db.collection("guilds")
     .doc(guild)
     .update({
       messageImageToSuppr:
         AllMessage === false
-          ? [{ channel, MessageID, TimeStamp: Date.now() + 60000 }]
+          ? [{ channel, MessageID, TimeStamp: Date.now() + 172800000 }]
           : [
               ...AllMessage,
-              { channel, MessageID, TimeStamp: Date.now() + 60000 },
+              { channel, MessageID, TimeStamp: Date.now() + 172800000 },
             ],
     });
 };
