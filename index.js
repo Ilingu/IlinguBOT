@@ -230,7 +230,7 @@ client.on("message", async (message) => {
         .setColor(0xffc300)
         .setTitle("Initialisation du sondage")
         .setDescription("_vote <ton sondage?>: pour initialiser ton sondage");
-      return message.reply(Embed);
+      return message.reply(Embed).then((m) => m.delete({ timeout: 5000 }));
     }
     return;
   }
@@ -282,9 +282,8 @@ client.on("message", async (message) => {
           messageReaction.react("👍");
           messageReaction.react("👎");
         }
-
-        if (message.deletable) message.delete().catch(console.error);
       });
+    if (message.deletable) message.delete();
   } else if (cmd === "say") {
     if (message.deletable) message.delete();
 
