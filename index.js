@@ -1,4 +1,4 @@
-const { Client, RichEmbed } = require("discord.js");
+const { Client, MessageEmbed } = require("discord.js");
 const { config } = require("dotenv");
 const firebase = require("firebase/app");
 const admin = require("firebase-admin");
@@ -7,7 +7,6 @@ const randomPuppy = require("random-puppy");
 
 // Initialize Firebase
 const serviceAccount = require("./serviceAccount.json");
-const FieldValue = require("firebase-admin").firestore.FieldValue;
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -17,7 +16,7 @@ const db = admin.firestore();
 
 // Config
 const client = new Client({
-  disableEveryone: true,
+  disableMentions: "everyone",
 });
 config({
   path: __dirname + "/.env",
@@ -28,21 +27,7 @@ const chooseArr = ["⛰", "🧻", "✂"];
 // let ignored = false;
 
 // Fn
-const getUserFromMention = (mention) => {
-  if (!mention) return;
-
-  if (mention.startsWith("<@") && mention.endsWith(">")) {
-    mention = mention.slice(2, -1);
-
-    if (mention.startsWith("!")) {
-      mention = mention.slice(1);
-    }
-
-    return client.users.get(mention);
-  }
-};
-
-const UpdateMessage = (AllMessage, channel, MessageID, guild) => {
+const POSTMessage = (AllMessage, channel, MessageID, guild) => {
   // 172800000 -> Ms of 2day
 
   db.collection("guilds")
@@ -58,37 +43,49 @@ const UpdateMessage = (AllMessage, channel, MessageID, guild) => {
     });
 };
 
+const UpdateMessageVar = (Data, guild) => {
+  db.collection("guilds").doc(guild).update({
+    messageImageToSuppr: Data,
+  });
+};
+
 // BOT
 client.on("ready", () => {
   console.log(`I'm now online, my name is ${client.user.username}`);
   client.user.setActivity(
     "++++++++++[>+>+++>+++++++>++++++++++<<<<-]>>>>-----.+++++++.+++++++++++++++.------------------.++++++++.",
     {
-      type: "LISTENING",
+      type: "COMPETING",
     }
   );
 });
 
 client.on("guildMemberAdd", async (member) => {
-  const role = member.guild.roles.find("name", "Gros gamer");
-  member.addRole(role);
+  const role = member.guild.roles.cache.find(
+    (role) => role.name === "Gros gamer"
+  );
+  member.roles.add(role);
   const subReddits = ["dankmeme", "meme", "me_irl", "PewdiepieSubmissions"];
   const random = subReddits[Math.floor(Math.random() * subReddits.length)];
   const img = await randomPuppy(random);
-  const embed = new RichEmbed()
+  const embed = new MessageEmbed()
     .setColor("RANDOM")
     .setImage(img)
     .setTitle(`From r/${random} (Reddit)`)
     .setURL(`https://reddit.com/r/${random}`);
 
-  const channel = member.guild.channels.find((ch) => ch.name === "🖐bienvenue");
+  const channel = member.guild.channels.cache.find(
+    (ch) => ch.name === "🖐bienvenue"
+  );
 
   channel.send(`Bienvenue <@${member.user.id}> !`);
   channel.send(embed);
 });
 
 client.on("emojiCreate", async (emoji) => {
-  const channel = emoji.guild.channels.find((ch) => ch.name === "annonces");
+  const channel = emoji.guild.channels.cache.find(
+    (ch) => ch.name === "annonces"
+  );
   const Author = await emoji.fetchAuthor();
   channel.send(
     `Un nouveau emoji a été ajouté ( emoji: <:${emoji.name}:${emoji.id}> ajouter par: <@${Author.id}> )`
@@ -108,10 +105,11 @@ client.on("message", async (message) => {
   const args = message.content.slice(prefix.length).trim().split(/ +/g);
   const cmd = args.shift().toLowerCase();
 
+  // Img Suppr
+  const guild = message.guild.id,
+    channel = message.channel.id,
+    MessageID = message.id;
   if (message.attachments.size > 0) {
-    let guild = message.guild.id,
-      channel = message.channel.id,
-      MessageID = message.id;
     db.collection("guilds")
       .doc(guild)
       .get()
@@ -119,8 +117,37 @@ client.on("message", async (message) => {
         if (doc.exists) {
           const Data = doc.data();
           if (Data.messageImageToSuppr)
-            UpdateMessage(Data, channel, MessageID, guild);
-          else UpdateMessage(false, channel, MessageID, guild);
+            POSTMessage(Data, channel, MessageID, guild);
+          else POSTMessage(false, channel, MessageID, guild);
+        } else {
+          console.log("No such document!");
+        }
+      })
+      .catch(console.error);
+  } else {
+    // Check MsgImg
+    db.collection("guilds")
+      .doc(guild)
+      .get()
+      .then((doc) => {
+        if (doc.exists) {
+          const Data = doc.data();
+          if (Data.messageImageToSuppr) {
+            Data.messageImageToSuppr.forEach((Msg, i) => {
+              if (Msg.TimeStamp <= Date.now()) {
+                const channelOfMessage = client.channels.cache.find(
+                  (ch) => ch.id === Msg.channel
+                );
+                channelOfMessage.messages
+                  .fetch(Msg.MessageID)
+                  .then((msgSupp) => {
+                    msgSupp.delete();
+                  });
+                Data.splice(i, 1);
+                UpdateMessageVar(Data, guild);
+              }
+            });
+          }
         } else {
           console.log("No such document!");
         }
@@ -128,28 +155,12 @@ client.on("message", async (message) => {
       .catch(console.error);
   }
 
+  // Other
   if (message.channel.name === "annonces") {
     const EmojiVu = message.guild.emojis.find((emoji) => emoji.name == "Vu");
     message.react(message.guild.emojis.get(EmojiVu.id));
   }
-  if (message.author.bot) {
-    // if (message.channel.name === "annonces-prog") {
-    //   const channel = message.guild.channels.find(
-    //     (ch) => ch.name === "annonces"
-    //   );
-    //   channel.send(
-    //     `Une nouvelle version de mon site https://myanimchecker.netlify.app/ vient d'être uploadé !`
-    //   );
-    // } else if (message.channel.name === "sortie-animes" && !ignored) {
-    //   ignored = true;
-    //   const Role = message.guild.roles.find((r) => r.name === "Anime");
-    //   message.channel.send(`${Role} un nouvelle épisode d'anime est sortie !`);
-    // } else {
-    //   if (ignored) ignored = false;
-    //   return;
-    // }
-    return;
-  }
+  if (message.author.bot) return;
   if (!message.guild) {
     // DM
     if (!message.content.startsWith(prefix))
@@ -184,7 +195,7 @@ client.on("message", async (message) => {
     message.channel.name !== "🔗partage" &&
     !message.content.includes("tenor")
   ) {
-    const channelPartage = message.guild.channels.find(
+    const channelPartage = message.guild.channels.cache.find(
       (ch) => ch.name === "🔗partage"
     );
 
@@ -196,7 +207,7 @@ client.on("message", async (message) => {
       .reply(
         `Votre message a été déplacé dans <#${channelPartage.id}> car il s'agit d'un lien.`
       )
-      .then((m) => m.delete(7000));
+      .then((m) => m.delete({ timeout: 7000 }));
     if (message.deletable) message.delete();
     return;
   }
@@ -215,25 +226,12 @@ client.on("message", async (message) => {
   if (!message.content.startsWith(prefix)) {
     if (message.channel.name === "sondages") {
       if (message.deletable) message.delete();
-      const Embed = new RichEmbed()
+      const Embed = new MessageEmbed()
         .setColor(0xffc300)
         .setTitle("Initialisation du sondage")
         .setDescription("_vote <ton sondage?>: pour initialiser ton sondage");
       return message.reply(Embed);
     }
-    // if (message.channel.name === "meme") {
-    //   const channel = message.guild.channels.find(
-    //     (ch) => ch.name === "général"
-    //   );
-    //   channel.send(`<@${message.author.id}> a dit:\n${message.content}`);
-    //   if (message.deletable) message.delete();
-    //   message.channel.send(
-    //     "Ce message n'a pas lieu d'être dans ce channel veuillez le mettre dans un channel approprié (exemple: dans le #meme on met toujours des commande _meme et pas de message normal qui eu sont destinés au #insulte)"
-    //   );
-    //   return;
-    // } else {
-    //   return;
-    // }
     return;
   }
 
@@ -254,13 +252,13 @@ client.on("message", async (message) => {
     let argsVote = message.content.substring(prefix.length).split(" ");
     let msgArgs;
     let Neutrale = false;
-    const Embed = new RichEmbed()
+    const Embed = new MessageEmbed()
       .setColor(0xffc300)
       .setTitle("Initialisation du sondage")
       .setDescription("_vote <ton sondage?>: pour initialiser ton sondage");
 
     if (!argsVote[1]) {
-      return message.reply(Embed).then((m) => m.delete(5000));
+      return message.reply(Embed).then((m) => m.delete({ timeout: 5000 }));
     }
 
     if (argsVote[1].toLowerCase() === "neutrale") {
@@ -287,88 +285,32 @@ client.on("message", async (message) => {
 
         if (message.deletable) message.delete().catch(console.error);
       });
-  } else if (cmd === "rename") {
-    if (args.length < 1)
-      return message
-        .reply(
-          "No name ? => _rename (bot, others) <ton nouveaux pseudo> (ex: _rename Ilingu)"
-        )
-        .then((m) => m.delete(5000));
-
-    if (args[0].toLowerCase() === "bot") {
-      if (!args[1])
-        return message
-          .reply(
-            "No name ? => _rename bot <nouveaux pseudo du bot> (ex: _rename bot Ilingu)"
-          )
-          .then((m) => m.delete(5000));
-      message.guild.members
-        .get(client.user.id)
-        .setNickname(args.slice(1).join(" "));
-      return message.channel.send(
-        `<@${client.user.id}> votre nouveaux pseudo est: ${args
-          .slice(1)
-          .join(
-            " "
-          )}\n(J'suis littéralement entrain de me parler à moi même 😥)\n(De plus je sais même pas si le pseudo qu'on m'a donné est bien ou pas vu que je suis pas un IA)`
-      );
-    } else if (args[0].toLowerCase() === "others") {
-      if (!args[1] || !args[2])
-        return message
-          .reply(
-            "No name ? => _rename others <@personne> <nouveaux pseudo du bot> (ex: _rename others @Ilingu être suprême)"
-          )
-          .then((m) => m.delete(5000));
-
-      const user = getUserFromMention(args[1]);
-      if (!user) {
-        return message
-          .reply(
-            `👻Personne fantôme👻\nJe cite: "${args[1]}" est inexistant sur ce serveur !`
-          )
-          .then((m) => m.delete(5000));
-      }
-      message.guild.members.get(user.id).setNickname(args.slice(2).join(" "));
-      user.send("Pseudo changé dans GameTeam");
-      return message.channel.send(
-        `<@${user.id}> votre nouveaux pseudo est: ${args
-          .slice(2)
-          .join(
-            " "
-          )}\n(En espérant qu'on t'a pas donné un pseudo trop rincé 😥)`
-      );
-    }
-
-    message.member.setNickname(args.join(" "));
-    message.channel.send(
-      `<@${message.author.id}> votre nouveaux pseudo est: ${args.join(
-        " "
-      )}\n(Mais tu le savais déjà, donc je suis inutile 😥)`
-    );
   } else if (cmd === "say") {
     if (message.deletable) message.delete();
 
     if (args.length < 1)
-      return message.reply("Nothings to say ?").then((m) => m.delete(5000));
+      return message
+        .reply("Nothings to say ?")
+        .then((m) => m.delete({ timeout: 5000 }));
 
     const roleColor = message.guild.me.displayHexColor;
 
     if (args[0].toLowerCase() === "embed") {
-      const embed = new RichEmbed()
+      const embed = new MessageEmbed()
         .setColor(roleColor)
         .setDescription(args.slice(1).join(" "))
         .setTimestamp()
-        .setAuthor(message.author.username, message.author.displayAvatarURL)
-        .setFooter(client.user.username, client.user.displayAvatarURL);
+        .setAuthor(message.author.username, message.author.displayAvatarURL())
+        .setFooter(client.user.username, client.user.displayAvatarURL());
       message.channel.send(embed);
     } else if (args[0].toLowerCase() === "embedimg") {
-      const embed = new RichEmbed()
+      const embed = new MessageEmbed()
         .setColor(roleColor)
         .setDescription(args.slice(1).join(" "))
         .setTimestamp()
-        .setImage(client.user.displayAvatarURL)
-        .setAuthor(message.author.username, message.author.displayAvatarURL)
-        .setFooter(client.user.username, client.user.displayAvatarURL);
+        .setImage(client.user.displayAvatarURL())
+        .setAuthor(message.author.username, message.author.displayAvatarURL())
+        .setFooter(client.user.username, client.user.displayAvatarURL());
 
       message.channel.send(embed);
     } else {
@@ -377,9 +319,9 @@ client.on("message", async (message) => {
   } else if (cmd === "rps") {
     const roleColor = message.guild.me.displayHexColor;
 
-    const embed = new RichEmbed()
+    const embed = new MessageEmbed()
       .setColor(roleColor)
-      .setFooter(message.guild.me.displayName, client.user.displayAvatarURL)
+      .setFooter(message.guild.me.displayName, client.user.displayAvatarURL())
       .setDescription(
         "Ajoute une réaction à un des ces emojis to play the game !"
       )
@@ -411,7 +353,7 @@ client.on("message", async (message) => {
     }
   } else if (cmd === "help") {
     if (message.deletable) message.delete();
-    const Embed = new RichEmbed()
+    const Embed = new MessageEmbed()
       .setColor(0xffc300)
       .setTitle("Comment utiliser IlinguBOT ?")
       .setDescription(
@@ -431,8 +373,8 @@ client.on("message", async (message) => {
     `
       )
       .setTimestamp()
-      .setAuthor(message.author.username, message.author.displayAvatarURL)
-      .setFooter(client.user.username, client.user.displayAvatarURL);
+      .setAuthor(message.author.username, message.author.displayAvatarURL())
+      .setFooter(client.user.username, client.user.displayAvatarURL());
 
     return message.reply(Embed);
   } else if (cmd === "meme") {
@@ -440,7 +382,7 @@ client.on("message", async (message) => {
     const random = subReddits[Math.floor(Math.random() * subReddits.length)];
 
     const img = await randomPuppy(random);
-    const embed = new RichEmbed()
+    const embed = new MessageEmbed()
       .setColor("RANDOM")
       .setImage(img)
       .setTitle(`From r/${random} (Reddit)`)
@@ -462,7 +404,7 @@ client.on("message", async (message) => {
       const Biggest = [parseInt(args[0]), parseInt(args[1])].sort();
       const toRandomised = Biggest[0] - Biggest[1];
 
-      const embed = new RichEmbed()
+      const embed = new MessageEmbed()
         .setColor(roleColor)
         .setDescription(
           `Résutat du nombre aléatoire entre ${Biggest[0]} et ${Biggest[1]}:
@@ -470,15 +412,15 @@ client.on("message", async (message) => {
           `
         )
         .setTimestamp()
-        .setAuthor(message.author.username, message.author.displayAvatarURL)
-        .setFooter(client.user.username, client.user.displayAvatarURL);
+        .setAuthor(message.author.username, message.author.displayAvatarURL())
+        .setFooter(client.user.username, client.user.displayAvatarURL());
       message.channel.send(embed);
     } else {
       message.channel
         .send(
           "_rda est un commande demandant 2 chiffres.\n\t En outre ça doit ressembler à ça: _rda x x\n EXEMPLE: _rda 5 9 (nombres aléatoire en 5 et 9)"
         )
-        .then((m) => m.delete(15000));
+        .then((m) => m.delete({ timeout: 15000 }));
     }
   } else {
     if (message.deletable) message.delete();
