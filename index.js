@@ -52,7 +52,7 @@ const UpdateMessage = (AllMessage, channel, MessageID, guild) => {
         AllMessage === false
           ? [{ channel, MessageID, TimeStamp: Date.now() + 60000 }]
           : [
-              ...Data.messageImageToSuppr,
+              ...AllMessage.messageImageToSuppr,
               { channel, MessageID, TimeStamp: Date.now() + 60000 },
             ],
     });
@@ -118,10 +118,11 @@ client.on("message", async (message) => {
       .then((doc) => {
         if (doc.exists) {
           const Data = doc.data();
-          UpdateMessage(Data, channel, MessageID, guild);
+          if (Data.messageImageToSuppr)
+            UpdateMessage(Data, channel, MessageID, guild);
+          else UpdateMessage(false, channel, MessageID, guild);
         } else {
           console.log("No such document!");
-          UpdateMessage(false, channel, MessageID, guild);
         }
       })
       .catch(console.error);
