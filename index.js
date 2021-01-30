@@ -224,7 +224,7 @@ client.on("message", async (message) => {
   //   });
   // ------
   if (!message.content.startsWith(prefix)) {
-    if (message.channel.name === "sondages") {
+    if (message.channel.name === "📝sondages") {
       if (message.deletable) message.delete();
       const Embed = new MessageEmbed()
         .setColor(0xffc300)
