@@ -115,9 +115,8 @@ client.on("message", async (message) => {
       .get()
       .then((doc) => {
         if (doc.exists) {
-          const Data = doc.data();
-          if (Data.messageImageToSuppr)
-            POSTMessage(Data, channel, MessageID, guild);
+          const Data = doc.data().messageImageToSuppr;
+          if (Data) POSTMessage(Data, channel, MessageID, guild);
           else POSTMessage(false, channel, MessageID, guild);
         } else {
           console.log("No such document!");
@@ -131,9 +130,9 @@ client.on("message", async (message) => {
       .get()
       .then((doc) => {
         if (doc.exists) {
-          const Data = doc.data();
-          if (Data.messageImageToSuppr) {
-            Data.messageImageToSuppr.forEach((Msg, i) => {
+          const Data = doc.data().messageImageToSuppr;
+          if (Data) {
+            Data.forEach((Msg, i) => {
               if (Msg.TimeStamp <= Date.now()) {
                 const channelOfMessage = client.channels.cache.find(
                   (ch) => ch.id === Msg.channel
@@ -157,7 +156,9 @@ client.on("message", async (message) => {
 
   // Other
   if (message.channel.name === "annonces") {
-    const EmojiVu = message.guild.emojis.find((emoji) => emoji.name == "Vu");
+    const EmojiVu = message.guild.emojis.cache.find(
+      (emoji) => emoji.name == "Vu"
+    );
     message.react(message.guild.emojis.get(EmojiVu.id));
   }
   if (message.author.bot) return;
@@ -212,7 +213,7 @@ client.on("message", async (message) => {
     return;
   }
   // Distribué
-  // const EmojiDistri = message.guild.emojis.find(
+  // const EmojiDistri = message.guild.emojis.cache.find(
   //   (emoji) => emoji.name == "distribuer"
   // );
   // message
