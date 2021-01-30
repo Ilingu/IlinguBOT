@@ -159,7 +159,7 @@ client.on("message", async (message) => {
     const EmojiVu = message.guild.emojis.cache.find(
       (emoji) => emoji.name == "Vu"
     );
-    message.react(message.guild.emojis.get(EmojiVu.id));
+    message.react(message.guild.emojis.cache.get(EmojiVu.id));
   }
   if (message.author.bot) return;
   if (!message.guild) {
@@ -217,7 +217,7 @@ client.on("message", async (message) => {
   //   (emoji) => emoji.name == "distribuer"
   // );
   // message
-  //   .react(message.guild.emojis.get(EmojiDistri.id))
+  //   .react(message.guild.emojis.cache.get(EmojiDistri.id))
   //   .then((messageReaction) => {
   //     setTimeout(() => {
   //       messageReaction.remove();
