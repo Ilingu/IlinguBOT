@@ -42,7 +42,7 @@ const getUserFromMention = (mention) => {
   }
 };
 
-const UpdateMessage = (AllMessage, channel, MessageID) => {
+const UpdateMessage = (AllMessage, channel, MessageID, guild) => {
   // 172800000 -> Ms of 2day
 
   db.collection("guilds")
@@ -118,10 +118,10 @@ client.on("message", async (message) => {
       .then((doc) => {
         if (doc.exists) {
           const Data = doc.data();
-          UpdateMessage(Data, channel, MessageID);
+          UpdateMessage(Data, channel, MessageID, guild);
         } else {
           console.log("No such document!");
-          UpdateMessage(false, channel, MessageID);
+          UpdateMessage(false, channel, MessageID, guild);
         }
       })
       .catch(console.error);
