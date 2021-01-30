@@ -37,7 +37,7 @@ const POSTMessage = (AllMessage, channel, MessageID, guild) => {
         AllMessage === false
           ? [{ channel, MessageID, TimeStamp: Date.now() + 60000 }]
           : [
-              ...AllMessage.messageImageToSuppr,
+              ...AllMessage,
               { channel, MessageID, TimeStamp: Date.now() + 60000 },
             ],
     });
