@@ -370,7 +370,7 @@ client.on("message", async (message) => {
       \t_vote neutrale <ton sondage>: crée un sondage avec une option A et une option B (choisir l'option que vous préférez,ex: Snk ou One Piece)
       _meme: (à faire dans le salon meme) met un meme aléatoirement
       _rda x x: te donne un nombre aléatoirement entre le 1er x et le 2ème, ex: _rda 5 8 (nombre aléatoire entre 5 et 8)
-      _timer <time> (ex: _timer 1min30s / _timer 120s), MAXIMUN = 2H
+      _timer <time> (ex: _timer 1min30s / _timer 120s), MAXIMUN = 2H/MINIMUM = 10S
     `
       )
       .setTimestamp()
@@ -416,6 +416,12 @@ client.on("message", async (message) => {
         return message
           .reply(
             "Merci de ne pas exéder un temps de 2H max pour ne pas trop surchager mon BOT"
+          )
+          .then((m) => m.delete({ timeout: 10000 }));
+      if (Minutes < 1)
+        return message
+          .reply(
+            "Merci de mettre au minimum un temps de 1min quand vous utiliser les minutes"
           )
           .then((m) => m.delete({ timeout: 10000 }));
 
@@ -467,6 +473,10 @@ client.on("message", async (message) => {
             "Merci de ne pas exéder un temps de 2H max pour ne pas trop surchager mon BOT"
           )
           .then((m) => m.delete({ timeout: 10000 }));
+      if (Minutes * 60 + Secondes < 10)
+        return message
+          .reply("Merci de mettre au minimum un temps de 10s")
+          .then((m) => m.delete({ timeout: 10000 }));
 
       let InS = Minutes * 60 + Secondes;
       const InMs = Minutes * 60000 + Secondes * 1000;
@@ -515,6 +525,10 @@ client.on("message", async (message) => {
           .reply(
             "Merci de ne pas exéder un temps de 2H max pour ne pas trop surchager mon BOT"
           )
+          .then((m) => m.delete({ timeout: 10000 }));
+      if (Secondes < 10)
+        return message
+          .reply("Merci de mettre au minimum un temps de 10s")
           .then((m) => m.delete({ timeout: 10000 }));
 
       const InMs = Secondes * 1000;
