@@ -415,7 +415,7 @@ client.on("message", async (message) => {
         m.edit(
           `<@${message.author.id}> : Fin du minuteur dans ${MinutesInS} secondes`
         );
-      }, 1000);
+      }, Math.round(MinutesInS / 10));
       setTimeout(() => {
         clearInterval(TheInterval);
         message.channel.send(
@@ -442,7 +442,7 @@ client.on("message", async (message) => {
         m.edit(
           `<@${message.author.id}> : Fin du minuteur dans ${InS} secondes`
         );
-      }, 1000);
+      }, Math.round(InS / 10));
       setTimeout(() => {
         clearInterval(TheInterval);
         message.channel.send(
@@ -468,7 +468,7 @@ client.on("message", async (message) => {
         m.edit(
           `<@${message.author.id}> : Fin du minuteur dans ${Secondes} secondes`
         );
-      }, 1000);
+      }, Math.round(Secondes / 10));
       setTimeout(() => {
         clearInterval(TheInterval);
         message.channel.send(
