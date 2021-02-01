@@ -139,10 +139,14 @@ client.on("message", async (message) => {
                 channelOfMessage.messages
                   .fetch(Msg.MessageID)
                   .then((msgSupp) => {
-                    msgSupp.delete();
+                    msgSupp
+                      .delete()
+                      .then((msg) => {
+                        Data.splice(i, 1);
+                        UpdateMessageVar(Data, guild);
+                      })
+                      .catch(console.error);
                   });
-                Data.splice(i, 1);
-                UpdateMessageVar(Data, guild);
               }
             });
           }
@@ -534,6 +538,7 @@ client.on("message", async (message) => {
         max: 1,
       })
         .then((collected) => {
+          console.log(collected);
           if (!collected) return;
           clearInterval(TheInterval);
           clearTimeout(TheTimeout);
