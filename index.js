@@ -361,12 +361,12 @@ client.on("message", async (message) => {
       _say <ton message>: dit un message de façon anonyme
       \t_say embed <ton message>: dit un message avec un embed
       \t_say embedimg <ton message>: dit in message avec un embed imagé
-      _rps: fait un fueilles-papier-ciseaux avec le bot*
+      _rps: fait un pierre-feuilles-ciseaux avec le bot
       _vote <ton sondage>: crée un sondage avec une réponse oui et une réponse non (soit d'accord soit pas d'accord)
       \t_vote neutrale <ton sondage>: crée un sondage avec une option A et une option B (choisir l'option que vous préférez,ex: Snk ou One Piece)
       _meme: (à faire dans le salon meme) met un meme aléatoirement
       _rda x x: te donne un nombre aléatoirement entre le 1er x et le 2ème, ex: _rda 5 8 (nombre aléatoire entre 5 et 8)
-      _timer <time> (ex: _timer 1min30s / _timer 120s)
+      _timer <time> (ex: _timer 1min30s / _timer 120s), MAXIMUN = 2H
     `
       )
       .setTimestamp()
@@ -404,6 +404,13 @@ client.on("message", async (message) => {
           .reply("This is not a valide time")
           .then((m) => m.delete({ timeout: 6000 }));
 
+      if (Minutes > 120)
+        return message
+          .reply(
+            "Merci de ne pas exéder un temps de 2H max pour ne pas trop surchager mon BOT"
+          )
+          .then((m) => m.delete({ timeout: 10000 }));
+
       let MinutesInS = Minutes * 60;
       const InMs = Minutes * 60000;
       const NumberToSoustracteAtEachInterval = Math.round(MinutesInS / 10);
@@ -432,6 +439,12 @@ client.on("message", async (message) => {
         return message
           .reply("This is not a valide time")
           .then((m) => m.delete({ timeout: 6000 }));
+      if (Minutes * 60 + Secondes > 7200)
+        return message
+          .reply(
+            "Merci de ne pas exéder un temps de 2H max pour ne pas trop surchager mon BOT"
+          )
+          .then((m) => m.delete({ timeout: 10000 }));
 
       let InS = Minutes * 60 + Secondes;
       const InMs = Minutes * 60000 + Secondes * 1000;
@@ -460,6 +473,13 @@ client.on("message", async (message) => {
         return message
           .reply("This is not a valide time")
           .then((m) => m.delete({ timeout: 6000 }));
+
+      if (Secondes > 7200)
+        return message
+          .reply(
+            "Merci de ne pas exéder un temps de 2H max pour ne pas trop surchager mon BOT"
+          )
+          .then((m) => m.delete({ timeout: 10000 }));
 
       const InMs = Secondes * 1000;
       const NumberToSoustracteAtEachInterval = Math.round(Secondes / 10);
