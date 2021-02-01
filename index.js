@@ -396,10 +396,6 @@ client.on("message", async (message) => {
         .reply("No Time for a Timer ? Are u serious ?")
         .then((m) => m.delete({ timeout: 6000 }));
 
-    const EmojiStop = message.guild.emojis.cache.find(
-      (emoji) => emoji.name == "Reverse"
-    );
-
     const filter = (reaction, user) => {
       return reaction.emoji.name === "Reverse" && user.id === message.author.id;
     };
@@ -441,7 +437,6 @@ client.on("message", async (message) => {
       }, InMs);
       m.awaitReactions(filter, {
         max: 1,
-        time: Math.round((MinutesInS * 1000) / 2),
       })
         .then((collected) => {
           clearInterval(TheInterval);
@@ -489,7 +484,6 @@ client.on("message", async (message) => {
       }, InMs);
       m.awaitReactions(filter, {
         max: 1,
-        time: Math.round((InS * 1000) / 2),
       })
         .then((collected) => {
           clearInterval(TheInterval);
@@ -536,7 +530,6 @@ client.on("message", async (message) => {
       }, InMs);
       m.awaitReactions(filter, {
         max: 1,
-        time: Math.round((Secondes * 1000) / 2),
       })
         .then((collected) => {
           clearInterval(TheInterval);
