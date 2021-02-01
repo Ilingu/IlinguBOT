@@ -390,6 +390,7 @@ client.on("message", async (message) => {
     const Time = args[0];
 
     if (message.deletable) message.delete();
+
     if (!Time)
       return message
         .reply("No Time for a Timer ? Are u serious ?")
@@ -417,7 +418,10 @@ client.on("message", async (message) => {
       }, 1000);
       setTimeout(() => {
         clearInterval(TheInterval);
-        m.edit(`<@${message.author.id}> : Fin du minuteur ! Temps écoulé.`);
+        message.channel.send(
+          `<@${message.author.id}> : Fin du minuteur ! Temps écoulé.`
+        );
+        if (m.deletable) m.delete();
       }, InMs);
     } else if (Time.split("min").length > 1 && Time.split("min")[1] !== "") {
       const Minutes = parseInt(Time.split("min")[0]);
@@ -441,7 +445,10 @@ client.on("message", async (message) => {
       }, 1000);
       setTimeout(() => {
         clearInterval(TheInterval);
-        m.edit(`<@${message.author.id}> : Fin du minuteur ! Temps écoulé.`);
+        message.channel.send(
+          `<@${message.author.id}> : Fin du minuteur ! Temps écoulé.`
+        );
+        if (m.deletable) m.delete();
       }, InMs);
     } else {
       let Secondes = parseInt(Time.split("s"));
@@ -464,7 +471,10 @@ client.on("message", async (message) => {
       }, 1000);
       setTimeout(() => {
         clearInterval(TheInterval);
-        m.edit(`<@${message.author.id}> : Fin du minuteur ! Temps écoulé.`);
+        message.channel.send(
+          `<@${message.author.id}> : Fin du minuteur ! Temps écoulé.`
+        );
+        if (m.deletable) m.delete();
       }, InMs);
     }
   } else if (cmd === "rda") {
