@@ -441,6 +441,8 @@ client.on("message", async (message) => {
       }, InMs);
       m.awaitReactions(filter, {
         max: 1,
+        time: MinutesInS * 1000,
+        errors: ["time"],
       })
         .then((collected) => {
           if (!collected) return;
@@ -489,9 +491,10 @@ client.on("message", async (message) => {
       }, InMs);
       m.awaitReactions(filter, {
         max: 1,
+        time: InS * 1000,
+        errors: ["time"],
       })
         .then((collected) => {
-          if (!collected) return;
           clearInterval(TheInterval);
           clearTimeout(TheTimeout);
           message.channel.send(
@@ -536,10 +539,10 @@ client.on("message", async (message) => {
       }, InMs);
       m.awaitReactions(filter, {
         max: 1,
+        time: Secondes * 1000,
+        errors: ["time"],
       })
         .then((collected) => {
-          console.log(collected);
-          if (!collected) return;
           clearInterval(TheInterval);
           clearTimeout(TheTimeout);
           message.channel.send(
