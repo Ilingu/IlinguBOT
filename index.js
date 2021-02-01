@@ -396,6 +396,17 @@ client.on("message", async (message) => {
         .reply("No Time for a Timer ? Are u serious ?")
         .then((m) => m.delete({ timeout: 6000 }));
 
+    const EmojiStop = message.guild.emojis.cache.find(
+      (emoji) => emoji.name == "Reverse"
+    );
+
+    const filter = (reaction, user) => {
+      return (
+        reaction.emoji.name === message.guild.emojis.cache.get(EmojiStop.id) &&
+        user.id === message.author.id
+      );
+    };
+
     if (Time.split("min").length > 1 && Time.split("min")[1] === "") {
       const Minutes = parseInt(Time.split("min")[0]);
 
@@ -424,13 +435,26 @@ client.on("message", async (message) => {
           `<@${message.author.id}> : Fin du minuteur dans ${MinutesInS} secondes`
         );
       }, Math.round(MinutesInS / 10) * 1000);
-      setTimeout(() => {
+      const TheTimeout = setTimeout(() => {
         clearInterval(TheInterval);
         message.channel.send(
           `<@${message.author.id}> : Fin du minuteur ! Temps écoulé.`
         );
         if (m.deletable) m.delete();
       }, InMs);
+      m.awaitReactions(filter, {
+        max: 1,
+        time: Math.round((MinutesInS * 1000) / 2),
+      })
+        .then((collected) => {
+          clearInterval(TheInterval);
+          clearTimeout(TheTimeout);
+          message.channel.send(
+            `<@${message.author.id}> : Fin du minuteur ! Minuteur annulé.`
+          );
+          if (m.deletable) m.delete();
+        })
+        .catch(console.error);
     } else if (Time.split("min").length > 1 && Time.split("min")[1] !== "") {
       const Minutes = parseInt(Time.split("min")[0]);
       const Secondes = parseInt(Time.split("min")[1]);
@@ -459,13 +483,26 @@ client.on("message", async (message) => {
           `<@${message.author.id}> : Fin du minuteur dans ${InS} secondes`
         );
       }, Math.round(InS / 10) * 1000);
-      setTimeout(() => {
+      const TheTimeout = setTimeout(() => {
         clearInterval(TheInterval);
         message.channel.send(
           `<@${message.author.id}> : Fin du minuteur ! Temps écoulé.`
         );
         if (m.deletable) m.delete();
       }, InMs);
+      m.awaitReactions(filter, {
+        max: 1,
+        time: Math.round((MinutesInS * 1000) / 2),
+      })
+        .then((collected) => {
+          clearInterval(TheInterval);
+          clearTimeout(TheTimeout);
+          message.channel.send(
+            `<@${message.author.id}> : Fin du minuteur ! Minuteur annulé.`
+          );
+          if (m.deletable) m.delete();
+        })
+        .catch(console.error);
     } else {
       let Secondes = parseInt(Time.split("s"));
 
@@ -493,13 +530,26 @@ client.on("message", async (message) => {
           `<@${message.author.id}> : Fin du minuteur dans ${Secondes} secondes`
         );
       }, Math.round(Secondes / 10) * 1000);
-      setTimeout(() => {
+      const TheTimeout = setTimeout(() => {
         clearInterval(TheInterval);
         message.channel.send(
           `<@${message.author.id}> : Fin du minuteur ! Temps écoulé.`
         );
         if (m.deletable) m.delete();
       }, InMs);
+      m.awaitReactions(filter, {
+        max: 1,
+        time: Math.round((MinutesInS * 1000) / 2),
+      })
+        .then((collected) => {
+          clearInterval(TheInterval);
+          clearTimeout(TheTimeout);
+          message.channel.send(
+            `<@${message.author.id}> : Fin du minuteur ! Minuteur annulé.`
+          );
+          if (m.deletable) m.delete();
+        })
+        .catch(console.error);
     }
   } else if (cmd === "rda") {
     if (message.deletable) message.delete();
