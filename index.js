@@ -445,7 +445,6 @@ client.on("message", async (message) => {
         errors: ["time"],
       })
         .then((collected) => {
-          if (!collected) return;
           clearInterval(TheInterval);
           clearTimeout(TheTimeout);
           message.channel.send(
