@@ -439,6 +439,7 @@ client.on("message", async (message) => {
         max: 1,
       })
         .then((collected) => {
+          if (!collected) return;
           clearInterval(TheInterval);
           clearTimeout(TheTimeout);
           message.channel.send(
@@ -486,6 +487,7 @@ client.on("message", async (message) => {
         max: 1,
       })
         .then((collected) => {
+          if (!collected) return;
           clearInterval(TheInterval);
           clearTimeout(TheTimeout);
           message.channel.send(
@@ -532,6 +534,7 @@ client.on("message", async (message) => {
         max: 1,
       })
         .then((collected) => {
+          if (!collected) return;
           clearInterval(TheInterval);
           clearTimeout(TheTimeout);
           message.channel.send(
