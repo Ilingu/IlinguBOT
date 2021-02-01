@@ -366,6 +366,7 @@ client.on("message", async (message) => {
       \t_vote neutrale <ton sondage>: crée un sondage avec une option A et une option B (choisir l'option que vous préférez,ex: Snk ou One Piece)
       _meme: (à faire dans le salon meme) met un meme aléatoirement
       _rda x x: te donne un nombre aléatoirement entre le 1er x et le 2ème, ex: _rda 5 8 (nombre aléatoire entre 5 et 8)
+      _timer <time> (ex: _timer 1min30s / _timer 120s)
     `
       )
       .setTimestamp()
@@ -385,6 +386,87 @@ client.on("message", async (message) => {
       .setURL(`https://reddit.com/r/${random}`);
     message.channel.send(embed);
     if (message.deletable) message.delete();
+  } else if (cmd === "timer") {
+    const Time = args[0];
+
+    if (message.deletable) message.delete();
+    if (!Time)
+      return message
+        .reply("No Time for a Timer ? Are u serious ?")
+        .then((m) => m.delete({ timeout: 6000 }));
+
+    if (Time.split("min").length > 1 && Time.split("min")[1] === "") {
+      const Minutes = parseInt(Time.split("min")[0]);
+
+      if (isNaN(Minutes))
+        return message
+          .reply("This is not a valide time")
+          .then((m) => m.delete({ timeout: 6000 }));
+
+      let MinutesInS = Minutes * 60;
+      const InMs = Minutes * 60000;
+
+      const m = await message.channel.send(
+        `<@${message.author.id}> : Fin du minuteur dans ${MinutesInS} secondes`
+      );
+      const TheInterval = setInterval(() => {
+        MinutesInS--;
+        m.edit(
+          `<@${message.author.id}> : Fin du minuteur dans ${MinutesInS} secondes`
+        );
+      }, 1000);
+      setTimeout(() => {
+        clearInterval(TheInterval);
+        m.edit(`<@${message.author.id}> : Fin du minuteur ! Temps écoulé.`);
+      }, InMs);
+    } else if (Time.split("min").length > 1 && Time.split("min")[1] !== "") {
+      const Minutes = parseInt(Time.split("min")[0]);
+      const Secondes = parseInt(Time.split("min")[1]);
+
+      if (isNaN(Minutes) || isNaN(Secondes))
+        return message
+          .reply("This is not a valide time")
+          .then((m) => m.delete({ timeout: 6000 }));
+
+      let InS = Minutes * 60 + Secondes;
+      const InMs = Minutes * 60000 + Secondes * 1000;
+      const m = await message.channel.send(
+        `<@${message.author.id}> : Fin du minuteur dans ${InS} secondes`
+      );
+      const TheInterval = setInterval(() => {
+        InS--;
+        m.edit(
+          `<@${message.author.id}> : Fin du minuteur dans ${InS} secondes`
+        );
+      }, 1000);
+      setTimeout(() => {
+        clearInterval(TheInterval);
+        m.edit(`<@${message.author.id}> : Fin du minuteur ! Temps écoulé.`);
+      }, InMs);
+    } else {
+      let Secondes = parseInt(Time.split("s"));
+
+      if (isNaN(Secondes))
+        return message
+          .reply("This is not a valide time")
+          .then((m) => m.delete({ timeout: 6000 }));
+
+      const InMs = Secondes * 1000;
+
+      const m = await message.channel.send(
+        `<@${message.author.id}> : Fin du minuteur dans ${Secondes} secondes`
+      );
+      const TheInterval = setInterval(() => {
+        Secondes--;
+        m.edit(
+          `<@${message.author.id}> : Fin du minuteur dans ${Secondes} secondes`
+        );
+      }, 1000);
+      setTimeout(() => {
+        clearInterval(TheInterval);
+        m.edit(`<@${message.author.id}> : Fin du minuteur ! Temps écoulé.`);
+      }, InMs);
+    }
   } else if (cmd === "rda") {
     if (message.deletable) message.delete();
 
