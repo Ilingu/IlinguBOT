@@ -401,10 +401,7 @@ client.on("message", async (message) => {
     );
 
     const filter = (reaction, user) => {
-      return (
-        reaction.emoji.name === message.guild.emojis.cache.get(EmojiStop.id) &&
-        user.id === message.author.id
-      );
+      return reaction.emoji.name === "Reverse" && user.id === message.author.id;
     };
 
     if (Time.split("min").length > 1 && Time.split("min")[1] === "") {
