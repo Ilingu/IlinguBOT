@@ -406,12 +406,13 @@ client.on("message", async (message) => {
 
       let MinutesInS = Minutes * 60;
       const InMs = Minutes * 60000;
+      const NumberToSoustracteAtEachInterval = Math.round(MinutesInS / 10);
 
       const m = await message.channel.send(
         `<@${message.author.id}> : Fin du minuteur dans ${MinutesInS} secondes`
       );
       const TheInterval = setInterval(() => {
-        MinutesInS--;
+        MinutesInS -= NumberToSoustracteAtEachInterval;
         m.edit(
           `<@${message.author.id}> : Fin du minuteur dans ${MinutesInS} secondes`
         );
@@ -434,11 +435,13 @@ client.on("message", async (message) => {
 
       let InS = Minutes * 60 + Secondes;
       const InMs = Minutes * 60000 + Secondes * 1000;
+      const NumberToSoustracteAtEachInterval = Math.round(InS / 10);
+
       const m = await message.channel.send(
         `<@${message.author.id}> : Fin du minuteur dans ${InS} secondes`
       );
       const TheInterval = setInterval(() => {
-        InS--;
+        InS -= NumberToSoustracteAtEachInterval;
         m.edit(
           `<@${message.author.id}> : Fin du minuteur dans ${InS} secondes`
         );
@@ -459,12 +462,13 @@ client.on("message", async (message) => {
           .then((m) => m.delete({ timeout: 6000 }));
 
       const InMs = Secondes * 1000;
+      const NumberToSoustracteAtEachInterval = Math.round(Secondes / 10);
 
       const m = await message.channel.send(
         `<@${message.author.id}> : Fin du minuteur dans ${Secondes} secondes`
       );
       const TheInterval = setInterval(() => {
-        Secondes--;
+        Secondes -= NumberToSoustracteAtEachInterval;
         m.edit(
           `<@${message.author.id}> : Fin du minuteur dans ${Secondes} secondes`
         );
