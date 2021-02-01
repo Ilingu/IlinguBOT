@@ -492,7 +492,7 @@ client.on("message", async (message) => {
       }, InMs);
       m.awaitReactions(filter, {
         max: 1,
-        time: Math.round((MinutesInS * 1000) / 2),
+        time: Math.round((InS * 1000) / 2),
       })
         .then((collected) => {
           clearInterval(TheInterval);
@@ -539,7 +539,7 @@ client.on("message", async (message) => {
       }, InMs);
       m.awaitReactions(filter, {
         max: 1,
-        time: Math.round((MinutesInS * 1000) / 2),
+        time: Math.round((Secondes * 1000) / 2),
       })
         .then((collected) => {
           clearInterval(TheInterval);
