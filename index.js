@@ -106,6 +106,7 @@ client.on("message", async (message) => {
 
   if (!message.guild) {
     // DM
+    if (message.author.bot) return;
     if (!message.content.startsWith(prefix))
       return message.reply(
         "Comment te dire que t'es dans mon espace privée là... Baaaaaka\n Genre on ta jamais appris à respecter la vie privée des gens."
