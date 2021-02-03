@@ -104,6 +104,29 @@ client.on("message", async (message) => {
   const args = message.content.slice(prefix.length).trim().split(/ +/g);
   const cmd = args.shift().toLowerCase();
 
+  if (!message.guild) {
+    // DM
+    if (!message.content.startsWith(prefix))
+      return message.reply(
+        "Comment te dire que t'es dans mon espace privée là... Baaaaaka\n Genre on ta jamais appris à respecter la vie privée des gens."
+      );
+
+    if (cmd === "fuck") {
+      return message.reply(
+        `Yaaaaa !\nDe 1 Bravo Pour Avoir Trouvé Le Résultat Du Brain Fuck (#DecodeurEnLigne...)\nDe 2 ça ne s'arrête pas là... (ça serait trop simple uwu)\nhttps://www.gillmeister-software.com/online-tools/text/encrypt-decrypt-text.aspx\nfwByNN8BGRJfJreYo4JDcjEt/kV4i1GF7Dio1a51KoIB0xwRyamFZMRc49anKviYFraz4i8knUsL1G/JBepTKlWmURqFgFTRzySjoDZ7Ms7NFRHqCZprcCW1CU4BcKnX`
+      );
+    }
+
+    if (cmd === "seins") {
+      return message.reply(
+        `Ok ok GG, franchement GG fallait le trouver... je suis tellement étonné que je suis presque sûr que personne ne liras ce message, c'est paradoxale vu que t'es entrain de le lire\nBref envoie moi (Ilingu) ce message et je te donnerais ce que tu veux DANS LA LIMITE DU RESONNABLE (genre un rôle discord ou jsp quoi).\n Code: ${Date.now()}, Utilisateur qui as trouvé: ${
+          message.author.username
+        }`
+      );
+    }
+    return;
+  }
+
   // Img Suppr
   const guild = message.guild.id,
     channel = message.channel.id,
@@ -157,7 +180,6 @@ client.on("message", async (message) => {
       .catch(console.error);
   }
 
-  // Other
   if (message.channel.name === "annonces") {
     const EmojiVu = message.guild.emojis.cache.find(
       (emoji) => emoji.name == "Vu"
@@ -165,28 +187,7 @@ client.on("message", async (message) => {
     message.react(message.guild.emojis.cache.get(EmojiVu.id));
   }
   if (message.author.bot) return;
-  if (!message.guild) {
-    // DM
-    if (!message.content.startsWith(prefix))
-      return message.reply(
-        "Comment te dire que t'es dans mon espace privée là... Baaaaaka\n Genre on ta jamais appris à respecter la vie privée des gens."
-      );
 
-    if (cmd === "fuck") {
-      return message.reply(
-        `Yaaaaa !\nDe 1 Bravo Pour Avoir Trouvé Le Résultat Du Brain Fuck (#DecodeurEnLigne...)\nDe 2 ça ne s'arrête pas là... (ça serait trop simple uwu)\nhttps://www.gillmeister-software.com/online-tools/text/encrypt-decrypt-text.aspx\nfwByNN8BGRJfJreYo4JDcjEt/kV4i1GF7Dio1a51KoIB0xwRyamFZMRc49anKviYFraz4i8knUsL1G/JBepTKlWmURqFgFTRzySjoDZ7Ms7NFRHqCZprcCW1CU4BcKnX`
-      );
-    }
-
-    if (cmd === "seins") {
-      return message.reply(
-        `Ok ok GG, franchement GG fallait le trouver... je suis tellement étonné que je suis presque sûr que personne ne liras ce message, c'est paradoxale vu que t'es entrain de le lire\nBref envoie moi (Ilingu) ce message et je te donnerais ce que tu veux DANS LA LIMITE DU RESONNABLE (genre un rôle discord ou jsp quoi).\n Code: ${Date.now()}, Utilisateur qui as trouvé: ${
-          message.author.username
-        }`
-      );
-    }
-    return;
-  }
   if (
     typeof message.content === "string" &&
     (message.content
