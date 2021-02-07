@@ -27,17 +27,34 @@ const chooseArr = ["⛰", "🧻", "✂"];
 // let ignored = false;
 
 // Fn
-const POSTMessage = (AllMessage, channel, MessageID, guild) => {
-  // 172800000 -> Ms of 2day
+const POSTMessage = (AllMessage, channel, MessageID, guild, more = false) => {
+  // 172800000 -> Ms of 2days
+  // 432000000 => Ms of 5days
   db.collection("guilds")
     .doc(guild)
     .update({
       messageImageToSuppr:
         AllMessage === false
-          ? [{ channel, MessageID, TimeStamp: Date.now() + 172800000 }]
+          ? [
+              {
+                channel,
+                MessageID,
+                TimeStamp:
+                  more === true
+                    ? Date.now() + 432000000
+                    : Date.now() + 172800000,
+              },
+            ]
           : [
               ...AllMessage,
-              { channel, MessageID, TimeStamp: Date.now() + 172800000 },
+              {
+                channel,
+                MessageID,
+                TimeStamp:
+                  more === true
+                    ? Date.now() + 432000000
+                    : Date.now() + 172800000,
+              },
             ],
     });
 };
@@ -139,8 +156,22 @@ client.on("message", async (message) => {
       .then((doc) => {
         if (doc.exists) {
           const Data = doc.data().messageImageToSuppr;
-          if (Data) POSTMessage(Data, channel, MessageID, guild);
-          else POSTMessage(false, channel, MessageID, guild);
+          if (Data)
+            POSTMessage(
+              Data,
+              channel,
+              MessageID,
+              guild,
+              cmd === "more" ? true : false
+            );
+          else
+            POSTMessage(
+              false,
+              channel,
+              MessageID,
+              guild,
+              cmd === "more" ? true : false
+            );
         } else {
           console.log("No such document!");
         }
@@ -189,6 +220,11 @@ client.on("message", async (message) => {
   }
   if (message.author.bot) return;
 
+  if (message.content.includes(".gif")) {
+    if (message.deletable) message.delete();
+    return;
+  }
+
   if (
     typeof message.content === "string" &&
     (message.content
@@ -199,7 +235,7 @@ client.on("message", async (message) => {
         .slice(0, message.content.split("/")[0].length - 1) === "https" ||
       message.content.split(".")[0] === "www") &&
     message.channel.name !== "🔗partage" &&
-    !message.content.includes("tenor")
+    !message.content.includes(".gif")
   ) {
     const channelPartage = message.guild.channels.cache.find(
       (ch) => ch.name === "🔗partage"
