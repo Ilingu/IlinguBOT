@@ -199,14 +199,11 @@ client.on("message", async (message) => {
                 channelOfMessage.messages
                   .fetch(Msg.MessageID)
                   .then((msgSupp) => {
-                    msgSupp
-                      .delete()
-                      .then((msg) => {
-                        Data.splice(i, 1);
-                        UpdateMessageVar(Data, guild);
-                      })
-                      .catch(console.error);
-                  });
+                    msgSupp.delete();
+                  })
+                  .catch(console.error);
+                Data.splice(i, 1);
+                UpdateMessageVar(Data, guild);
               }
             });
           }
@@ -234,8 +231,7 @@ client.on("message", async (message) => {
         .split("/")[0]
         .slice(0, message.content.split("/")[0].length - 1) === "https" ||
       message.content.split(".")[0] === "www") &&
-    message.channel.name !== "🔗partage" &&
-    !message.content.includes(".gif")
+    message.channel.name !== "🔗partage"
   ) {
     const channelPartage = message.guild.channels.cache.find(
       (ch) => ch.name === "🔗partage"
