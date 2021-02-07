@@ -145,7 +145,8 @@ client.on("message", async (message) => {
     return;
   }
 
-  if (message.content.includes(".gif")) return message.delete();
+  if (message.content.includes(".gif") || message.content.includes("-gif"))
+    return message.delete();
 
   // Img Suppr
   const guild = message.guild.id,
