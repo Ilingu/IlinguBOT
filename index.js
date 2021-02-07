@@ -145,6 +145,8 @@ client.on("message", async (message) => {
     return;
   }
 
+  if (message.content.includes(".gif")) return message.delete();
+
   // Img Suppr
   const guild = message.guild.id,
     channel = message.channel.id,
@@ -177,6 +179,9 @@ client.on("message", async (message) => {
         }
       })
       .catch(console.error);
+    if (cmd === "more") {
+      message.edit(message.content.split("_more")[2]);
+    }
   } else {
     // Check MsgImg
     db.collection("guilds")
@@ -219,11 +224,6 @@ client.on("message", async (message) => {
     message.react(message.guild.emojis.cache.get(EmojiVu.id));
   }
   if (message.author.bot) return;
-
-  if (message.content.includes(".gif")) {
-    if (message.deletable) message.delete();
-    return;
-  }
 
   if (
     typeof message.content === "string" &&
