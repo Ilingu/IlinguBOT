@@ -180,9 +180,6 @@ client.on("message", async (message) => {
         }
       })
       .catch(console.error);
-    if (cmd === "more") {
-      message.edit(message.content.split("_more")[2]);
-    }
   } else {
     // Check MsgImg
     db.collection("guilds")
