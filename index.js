@@ -180,6 +180,9 @@ client.on("message", async (message) => {
         }
       })
       .catch(console.error);
+    if (cmd === "more") {
+      message.edit(message.content.split("_more")[2]);
+    }
   } else {
     // Check MsgImg
     db.collection("guilds")
@@ -271,6 +274,7 @@ client.on("message", async (message) => {
     return;
   }
 
+  if (cmd === "more") return;
   if (cmd === "ping") {
     if (message.deletable) message.delete();
     const msg = await message.channel.send(`🏓 Pinging...`);
