@@ -148,7 +148,7 @@ client.on("message", async (message) => {
   if (
     (message.content.includes(".gif") || message.content.includes("-gif")) &&
     message.author.id ===
-      client.users.cache.find((u) => u.tag === "3T33TT#6772").id
+      client.users.cache.find((u) => u.tag === "3T33TT#6772")
   )
     return message.delete();
 
