@@ -236,7 +236,9 @@ client.on("message", async (message) => {
         .split("/")[0]
         .slice(0, message.content.split("/")[0].length - 1) === "https" ||
       message.content.split(".")[0] === "www") &&
-    message.channel.name !== "🔗partage"
+    message.channel.name !== "🔗partage" &&
+    !message.content.includes(".gif") &&
+    !message.content.includes("-gif")
   ) {
     const channelPartage = message.guild.channels.cache.find(
       (ch) => ch.name === "🔗partage"
