@@ -27,7 +27,7 @@ const chooseArr = ["⛰", "🧻", "✂"];
 // let ignored = false;
 
 // Fn
-const POSTMessage = (AllMessage, channel, MessageID, guild, more = false) => {
+const POSTMessage = (AllMessage, channel, MessageID, guild) => {
   // 172800000 -> Ms of 2days
   // 432000000 => Ms of 5days
   db.collection("guilds")
@@ -39,10 +39,7 @@ const POSTMessage = (AllMessage, channel, MessageID, guild, more = false) => {
               {
                 channel,
                 MessageID,
-                TimeStamp:
-                  more === true
-                    ? Date.now() + 432000000
-                    : Date.now() + 172800000,
+                TimeStamp: Date.now() + 432000000,
               },
             ]
           : [
@@ -50,10 +47,7 @@ const POSTMessage = (AllMessage, channel, MessageID, guild, more = false) => {
               {
                 channel,
                 MessageID,
-                TimeStamp:
-                  more === true
-                    ? Date.now() + 432000000
-                    : Date.now() + 172800000,
+                TimeStamp: Date.now() + 432000000,
               },
             ],
     });
@@ -68,17 +62,14 @@ const UpdateMessageVar = (Data, guild) => {
 // BOT
 client.on("ready", () => {
   console.log(`I'm now online, my name is ${client.user.username}`);
-  client.user.setActivity(
-    "++++++++++[>+>+++>+++++++>++++++++++<<<<-]>>>>-----.+++++++.+++++++++++++++.------------------.++++++++.",
-    {
-      type: "COMPETING",
-    }
-  );
+  client.user.setActivity("du porno ^^", {
+    type: "WATCHING",
+  });
 });
 
 client.on("guildMemberAdd", async (member) => {
   const role = member.guild.roles.cache.find(
-    (role) => role.name === "Gros gamer"
+    (role) => role.name === "Epic G@m3r"
   );
   member.roles.add(role);
   const subReddits = ["dankmeme", "meme", "me_irl", "PewdiepieSubmissions"];
@@ -91,11 +82,20 @@ client.on("guildMemberAdd", async (member) => {
     .setURL(`https://reddit.com/r/${random}`);
 
   const channel = member.guild.channels.cache.find(
-    (ch) => ch.name === "🖐bienvenue"
+    (ch) => ch.name === "👉entrée"
   );
 
-  channel.send(`Bienvenue <@${member.user.id}> !`);
+  channel.send(`<@everyone>\nBienvenue <@${member.user.id}> !`);
   channel.send(embed);
+});
+
+client.on("guildMemberRemove", async (member) => {
+  const channel = member.guild.channels.cache.find(
+    (ch) => ch.name === "🌳sortie"
+  );
+  channel.send(
+    `<@everyone>\nSayonara <@${member.user.id}> 😥 (tu nous manqueras pas ^^)`
+  );
 });
 
 client.on("emojiCreate", async (emoji) => {
@@ -129,28 +129,11 @@ client.on("message", async (message) => {
         "Comment te dire que t'es dans mon espace privée là... Baaaaaka\n Genre on ta jamais appris à respecter la vie privée des gens."
       );
 
-    if (cmd === "fuck") {
-      return message.reply(
-        `Yaaaaa !\nDe 1 Bravo Pour Avoir Trouvé Le Résultat Du Brain Fuck (#DecodeurEnLigne...)\nDe 2 ça ne s'arrête pas là... (ça serait trop simple uwu)\nhttps://www.gillmeister-software.com/online-tools/text/encrypt-decrypt-text.aspx\nfwByNN8BGRJfJreYo4JDcjEt/kV4i1GF7Dio1a51KoIB0xwRyamFZMRc49anKviYFraz4i8knUsL1G/JBepTKlWmURqFgFTRzySjoDZ7Ms7NFRHqCZprcCW1CU4BcKnX`
-      );
-    }
-
-    if (cmd === "seins") {
-      return message.reply(
-        `Ok ok GG, franchement GG fallait le trouver... je suis tellement étonné que je suis presque sûr que personne ne liras ce message, c'est paradoxale vu que t'es entrain de le lire\nBref envoie moi (Ilingu) ce message et je te donnerais ce que tu veux DANS LA LIMITE DU RESONNABLE (genre un rôle discord ou jsp quoi).\n Code: ${Date.now()}, Utilisateur qui as trouvé: ${
-          message.author.username
-        }`
-      );
+    if (cmd === "David") {
+      return message.reply("♥");
     }
     return;
   }
-
-  if (
-    (message.content.includes(".gif") || message.content.includes("-gif")) &&
-    message.author.id ===
-      client.users.cache.find((u) => u.tag === "3T33TT#6772")
-  )
-    return message.delete();
 
   // Img Suppr
   const guild = message.guild.id,
@@ -163,30 +146,13 @@ client.on("message", async (message) => {
       .then((doc) => {
         if (doc.exists) {
           const Data = doc.data().messageImageToSuppr;
-          if (Data)
-            POSTMessage(
-              Data,
-              channel,
-              MessageID,
-              guild,
-              cmd === "more" ? true : false
-            );
-          else
-            POSTMessage(
-              false,
-              channel,
-              MessageID,
-              guild,
-              cmd === "more" ? true : false
-            );
+          if (Data) POSTMessage(Data, channel, MessageID, guild);
+          else POSTMessage(false, channel, MessageID, guild);
         } else {
           console.log("No such document!");
         }
       })
       .catch(console.error);
-    if (cmd === "more") {
-      message.edit(message.content.split("_more")[2]);
-    }
   } else {
     // Check MsgImg
     db.collection("guilds")
@@ -238,7 +204,8 @@ client.on("message", async (message) => {
       message.content.split(".")[0] === "www") &&
     message.channel.name !== "🔗partage" &&
     !message.content.includes(".gif") &&
-    !message.content.includes("-gif")
+    !message.content.includes("-gif") &&
+    !message.content.includes("discord.com")
   ) {
     const channelPartage = message.guild.channels.cache.find(
       (ch) => ch.name === "🔗partage"
@@ -268,19 +235,9 @@ client.on("message", async (message) => {
   //     }, 1000);
   //   });
   // ------
-  if (!message.content.startsWith(prefix)) {
-    if (message.channel.name === "📝sondages") {
-      if (message.deletable) message.delete();
-      const Embed = new MessageEmbed()
-        .setColor(0xffc300)
-        .setTitle("Initialisation du sondage")
-        .setDescription("_vote <ton sondage?>: pour initialiser ton sondage");
-      return message.reply(Embed).then((m) => m.delete({ timeout: 5000 }));
-    }
-    return;
-  }
 
-  if (cmd === "more") return;
+  if (!message.content.startsWith(prefix)) return;
+
   if (cmd === "ping") {
     if (message.deletable) message.delete();
     const msg = await message.channel.send(`🏓 Pinging...`);
@@ -293,43 +250,6 @@ client.on("message", async (message) => {
         msg.createdAt - message.createdAt
       )} ms** -> à part si vous connaissez il ne vous servira à rien...)*`
     );
-  } else if (cmd === "vote") {
-    // Add Vote sans oui ou non juste on vote se qu'on préfère
-    let argsVote = message.content.substring(prefix.length).split(" ");
-    let msgArgs;
-    let Neutrale = false;
-    const Embed = new MessageEmbed()
-      .setColor(0xffc300)
-      .setTitle("Initialisation du sondage")
-      .setDescription("_vote <ton sondage?>: pour initialiser ton sondage");
-
-    if (!argsVote[1]) {
-      return message.reply(Embed).then((m) => m.delete({ timeout: 5000 }));
-    }
-
-    if (argsVote[1].toLowerCase() === "neutrale") {
-      msgArgs = argsVote.slice(2).join(" ");
-      Neutrale = true;
-    } else {
-      msgArgs = argsVote.slice(1).join(" ");
-    }
-
-    message.channel
-      .send(
-        `📝 **${msgArgs}** ( Sondage de <@${message.author.id}> )${
-          Neutrale ? `\n🅰 pour l'option 1 et 🅱 pour l'option 2` : ""
-        }`
-      )
-      .then((messageReaction) => {
-        if (Neutrale) {
-          messageReaction.react("🅰");
-          messageReaction.react("🅱");
-        } else {
-          messageReaction.react("👍");
-          messageReaction.react("👎");
-        }
-      });
-    if (message.deletable) message.delete();
   } else if (cmd === "say") {
     if (message.deletable) message.delete();
 
@@ -408,8 +328,6 @@ client.on("message", async (message) => {
       \t_say embed <ton message>: dit un message avec un embed
       \t_say embedimg <ton message>: dit in message avec un embed imagé
       _rps: fait un pierre-feuilles-ciseaux avec le bot
-      _vote <ton sondage>: crée un sondage avec une réponse oui et une réponse non (soit d'accord soit pas d'accord)
-      \t_vote neutrale <ton sondage>: crée un sondage avec une option A et une option B (choisir l'option que vous préférez,ex: Snk ou One Piece)
       _meme: (à faire dans le salon meme) met un meme aléatoirement
       _rda x x: te donne un nombre aléatoirement entre le 1er x et le 2ème, ex: _rda 5 8 (nombre aléatoire entre 5 et 8)
       _timer <time> (ex: _timer 1min30s / _timer 120s), MAXIMUN = 2H/MINIMUM = 10S
