@@ -83,9 +83,7 @@ const LevelUp = (User, guild, Data) => {
   if (AllData[User].xp >= 150 && Math.round(Math.random() * 10) <= 5) {
     AllData[User].xp = 0;
     AllData[User].lvl + 1;
-    const channel = client.guild.channels.cache.find(
-      (ch) => ch.name === "annonces"
-    );
+    const channel = client.channels.cache.find((ch) => ch.name === "annonces");
 
     channel.send(`<@${User}> !\n✅💹Tu passes niv.${AllData[User].lvl}!`);
   }
