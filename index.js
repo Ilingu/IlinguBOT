@@ -59,6 +59,64 @@ const UpdateMessageVar = (Data, guild) => {
   });
 };
 
+const GetLevel = (guild) => {
+  return new Promise((resolve, reject) => {
+    db.collection("guilds")
+      .doc(guild)
+      .get()
+      .then((doc) => {
+        if (doc.exists) {
+          resolve(doc.data().levels);
+        } else {
+          reject("No such document!");
+        }
+      })
+      .catch(reject);
+  });
+};
+
+const LevelUp = (User, guild, Data) => {
+  let AllData = { ...Data };
+  AllData[User].xp += Math.round(Math.random() * 10) + 2;
+  AllData[User].nbMsg += 1;
+
+  if (AllData[User].xp >= 150 && Math.round(Math.random() * 10) <= 5) {
+    AllData[User].xp = 0;
+    AllData[User].lvl + 1;
+    const channel = client.guild.channels.cache.find(
+      (ch) => ch.name === "annonces"
+    );
+
+    channel.send(`<@${User}> !\n✅💹Tu passes niv.${AllData[User].lvl}!`);
+  }
+
+  db.collection("guilds").doc(guild).update({
+    levels: AllData,
+  });
+};
+
+const CheckLevelUpUser = async (User, guild) => {
+  try {
+    const Level = await GetLevel(guild);
+    if (Level[User]) LevelUp(User, guild, Level);
+    else
+      db.collection("guilds")
+        .doc(guild)
+        .update({
+          levels: {
+            ...Level,
+            [User]: {
+              xp: Math.round(Math.random() * 10) + 2,
+              lvl: 0,
+              nbMsg: 1,
+            },
+          },
+        });
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 // BOT
 client.on("ready", () => {
   console.log(`I'm now online, my name is ${client.user.username}`);
@@ -113,6 +171,7 @@ client.on("guildCreate", async (gData) => {
     guildID: gData.id,
     guildName: gData.name,
     messageImageToSuppr: [],
+    levels: {},
   });
 });
 
@@ -128,10 +187,6 @@ client.on("message", async (message) => {
       return message.reply(
         "Comment te dire que t'es dans mon espace privée là... Baaaaaka\n Genre on ta jamais appris à respecter la vie privée des gens."
       );
-
-    if (cmd === "David") {
-      return message.reply("♥");
-    }
     return;
   }
 
@@ -192,6 +247,8 @@ client.on("message", async (message) => {
     message.react(message.guild.emojis.cache.get(EmojiVu.id));
   }
   if (message.author.bot) return;
+  // Leveling Sys
+  CheckLevelUpUser(message.author.id, guild);
 
   if (
     typeof message.content === "string" &&
@@ -223,6 +280,7 @@ client.on("message", async (message) => {
     if (message.deletable) message.delete();
     return;
   }
+
   // Distribué
   // const EmojiDistri = message.guild.emojis.cache.find(
   //   (emoji) => emoji.name == "distribuer"
@@ -316,6 +374,19 @@ client.on("message", async (message) => {
         return "Ooooo non, tu as perdu(e) !";
       }
     }
+  } else if (cmd === "lvl") {
+    const UserLvl = (await GetLevel(guild))[message.author.id];
+    const Embed = new MessageEmbed()
+      .setColor(0xffc300)
+      .setTitle(`⭕Niveau de ${message.author.username}⭕`)
+      .setDescription(
+        `**Ton niveau**: __${UserLvl.lvl}__\n**Ton XP**: __${UserLvl.xp}__\n**Nombres de messages au total**:__${UserLvl.nbMsg}__\n\n(PS: pour passer niveau supérieur il faut avoir minimun 150xp + un peu de chance 😋)`
+      )
+      .setTimestamp()
+      .setAuthor(message.author.username, message.author.displayAvatarURL())
+      .setFooter(client.user.username, client.user.displayAvatarURL());
+
+    message.channel.send(embed);
   } else if (cmd === "help") {
     if (message.deletable) message.delete();
     const Embed = new MessageEmbed()
@@ -324,6 +395,7 @@ client.on("message", async (message) => {
       .setDescription(
         `
       _ping: affiche ton ping
+      _lvl: affiche ton niveau sur le serv
       _say <ton message>: dit un message de façon anonyme
       \t_say embed <ton message>: dit un message avec un embed
       \t_say embedimg <ton message>: dit in message avec un embed imagé
