@@ -386,7 +386,7 @@ client.on("message", async (message) => {
       .setAuthor(message.author.username, message.author.displayAvatarURL())
       .setFooter(client.user.username, client.user.displayAvatarURL());
 
-    message.channel.send(embed);
+    message.channel.send(Embed);
   } else if (cmd === "help") {
     if (message.deletable) message.delete();
     const Embed = new MessageEmbed()
