@@ -331,6 +331,7 @@ client.on("message", async (message) => {
       lookup
         .checkSingle(args[0])
         .then((isMalicious) => {
+          console.log(args[0], isMalicious);
           if (isMalicious) {
             message.channel.send(
               `❌**<@${message.author.id}>! NE CLICK SURTOUT PAS ! C'EST UNE URL INFÉCTÉE ET DANGEREUSE ! ELLE EST L'INCARNATION DU DIABLE !!!**❌`
