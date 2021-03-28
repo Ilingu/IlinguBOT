@@ -418,15 +418,17 @@ client.on("message", async (message) => {
     }
   } else if (cmd === "lvl") {
     let UserLvl = null;
-    if (args[0] && message?.mentions?.users?.first())
+    let Mention = false;
+    if (args[0] && message.mentions) {
+      Mention = true;
       UserLvl = (await GetLevel(guild))[message.mentions.users.first().id];
-    else UserLvl = (await GetLevel(guild))[message.author.id];
+    } else UserLvl = (await GetLevel(guild))[message.author.id];
 
     const Embed = new MessageEmbed()
       .setColor(0xffc300)
       .setTitle(
         `⭕Niveau de <@${
-          message?.mentions?.users?.first()?.id || message.author.id
+          !Mention ? message.author.id : message.mentions.users.first().id
         }>⭕`
       )
       .setDescription(
