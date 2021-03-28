@@ -22,6 +22,11 @@ config({
   path: __dirname + "/.env",
 });
 
+// Init CheckUrl
+const lookup = require("safe-browse-url-lookup")({
+  apiKey: process.env.GOOGLETOKEN,
+});
+
 // Var
 const chooseArr = ["⛰", "🧻", "✂"];
 // let ignored = false;
@@ -85,7 +90,11 @@ const LevelUp = (User, guild, Data) => {
     AllData[User].lvl += 1;
     const channel = client.channels.cache.find((ch) => ch.name === "annonces");
 
-    channel.send(`<@${User}> !\n✅💹Tu passes niv.${AllData[User].lvl}!`);
+    channel.send(
+      `${
+        client.users.cache.find((us) => us.id === User).username
+      }!\n✅Tu passes niv.${AllData[User].lvl}!`
+    );
   }
 
   db.collection("guilds").doc(guild).update({
@@ -114,6 +123,15 @@ const CheckLevelUpUser = async (User, guild) => {
     console.error(err);
   }
 };
+
+function isValidHttpUrl(string) {
+  try {
+    new URL(string);
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
 
 // BOT
 client.on("ready", () => {
@@ -250,13 +268,7 @@ client.on("message", async (message) => {
 
   if (
     typeof message.content === "string" &&
-    (message.content
-      .split("/")[0]
-      .slice(0, message.content.split("/")[0].length - 1) === "http" ||
-      message.content
-        .split("/")[0]
-        .slice(0, message.content.split("/")[0].length - 1) === "https" ||
-      message.content.split(".")[0] === "www") &&
+    isValidHttpUrl(message.content) &&
     message.channel.name !== "🔗partage" &&
     !message.content.includes(".gif") &&
     !message.content.includes("-gif") &&
@@ -306,6 +318,38 @@ client.on("message", async (message) => {
         msg.createdAt - message.createdAt
       )} ms** -> à part si vous connaissez il ne vous servira à rien...)*`
     );
+  } else if (cmd === "check") {
+    if (args.length < 1)
+      return message
+        .reply("Comment veut tu que je vérifie une url inexistante -_- ?!")
+        .then((m) => m.delete({ timeout: 5000 }));
+    if (
+      typeof args[0] === "string" &&
+      args[0].trim().length !== 0 &&
+      isValidHttpUrl(args[0])
+    ) {
+      lookup
+        .checkSingle(args[0])
+        .then((isMalicious) => {
+          if (isMalicious) {
+            message.channel.send(
+              `❌**<@${message.author.id}>! NE CLICK SURTOUT PAS ! C'EST UNE URL INFÉCTÉE ET DANGEREUSE ! ELLE EST L'INCARNATION DU DIABLE !!!**❌`
+            );
+          } else {
+            message.channel.send(
+              `🔰<@${message.author.id}>, cette URL n'est à première vue pas dangereuse, tous les tests indique qu'elle est safe, maintenant on est sur internet alors soi prudent (http et https par exemple...)🔰`
+            );
+          }
+        })
+        .catch((err) => {
+          console.log("Something went wrong.");
+          console.error(err);
+        });
+    } else {
+      return message
+        .reply("Merci de me donner une url **VALIDE**")
+        .then((m) => m.delete({ timeout: 5000 }));
+    }
   } else if (cmd === "say") {
     if (message.deletable) message.delete();
 
@@ -376,7 +420,7 @@ client.on("message", async (message) => {
     const UserLvl = (await GetLevel(guild))[message.author.id];
     const Embed = new MessageEmbed()
       .setColor(0xffc300)
-      .setTitle(`⭕Niveau de ${message.author.username}⭕`)
+      .setTitle(`⭕Niveau de <@${message.author.id}>⭕`)
       .setDescription(
         `**Ton niveau**: __${UserLvl.lvl}__\n**Ton XP**: __${UserLvl.xp}__\n**Nombres de messages au total**:__${UserLvl.nbMsg}__\n\n(PS: pour passer niveau supérieur il faut avoir minimun 150xp + un peu de chance 😋)`
       )
