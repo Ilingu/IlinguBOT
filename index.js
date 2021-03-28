@@ -331,7 +331,6 @@ client.on("message", async (message) => {
       lookup
         .checkSingle(args[0])
         .then((isMalicious) => {
-          console.log(args[0], isMalicious);
           if (isMalicious) {
             message.channel.send(
               `❌**<@${message.author.id}>! NE CLICK SURTOUT PAS ! C'EST UNE URL INFÉCTÉE ET DANGEREUSE ! ELLE EST L'INCARNATION DU DIABLE !!!**❌`
@@ -418,10 +417,18 @@ client.on("message", async (message) => {
       }
     }
   } else if (cmd === "lvl") {
-    const UserLvl = (await GetLevel(guild))[message.author.id];
+    let UserLvl = null;
+    if (args[0] && message?.mentions?.users?.first())
+      UserLvl = (await GetLevel(guild))[message.mentions.users.first().id];
+    else UserLvl = (await GetLevel(guild))[message.author.id];
+
     const Embed = new MessageEmbed()
       .setColor(0xffc300)
-      .setTitle(`⭕Niveau de <@${message.author.id}>⭕`)
+      .setTitle(
+        `⭕Niveau de <@${
+          message?.mentions?.users?.first()?.id || message.author.id
+        }>⭕`
+      )
       .setDescription(
         `**Ton niveau**: __${UserLvl.lvl}__\n**Ton XP**: __${UserLvl.xp}__\n**Nombres de messages au total**:__${UserLvl.nbMsg}__\n\n(PS: pour passer niveau supérieur il faut avoir minimun 150xp + un peu de chance 😋)`
       )
@@ -440,6 +447,7 @@ client.on("message", async (message) => {
       _ping: affiche ton ping
       _lvl: affiche ton niveau sur le serv
       _say <ton message>: dit un message de façon anonyme
+      _check <url>: Vérifie si cette url est dangereuse ou nan
       \t_say embed <ton message>: dit un message avec un embed
       \t_say embedimg <ton message>: dit in message avec un embed imagé
       _rps: fait un pierre-feuilles-ciseaux avec le bot
