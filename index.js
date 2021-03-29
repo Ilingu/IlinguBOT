@@ -1,4 +1,4 @@
-const { Client, MessageEmbed } = require("discord.js");
+const { Client, MessageEmbed, APIMessage } = require("discord.js");
 const { config } = require("dotenv");
 const firebase = require("firebase/app");
 const admin = require("firebase-admin");
@@ -140,6 +140,35 @@ const getApp = (guildID) => {
   return app;
 };
 
+const replyToCommand = async (interaction, replyText) => {
+  let data = {
+    content: replyText,
+  };
+
+  // Check For Embed
+  if (typeof replyText === "object") {
+    data = await createAPIMessage(interaction, replyText);
+  }
+
+  client.api.interactions(interaction.id, interaction.token).callback.post({
+    data: {
+      type: 4,
+      data,
+    },
+  });
+};
+
+const createAPIMessage = async (interaction, content) => {
+  const { data, files } = await APIMessage.create(
+    client.channels.resolve(interaction.channel_id),
+    content
+  )
+    .resolveData()
+    .resolveFiles();
+
+  return { ...data, files };
+};
+
 // BOT
 client.on("ready", async () => {
   console.log(`I'm now online, my name is ${client.user.username}`);
@@ -150,27 +179,84 @@ client.on("ready", async () => {
   const commands = await getApp(guildCommandsID).commands.get();
 
   // Add
-  if (commands.length === 0) {
-    await getApp(guildCommandsID).commands.post({
-      data: {
-        name: "ping",
-        description: "Fait un ping pong avec le bot !",
-      },
-    });
-  }
+  await getApp(guildCommandsID).commands.post({
+    data: {
+      name: "ping",
+      description: "Fait un ping pong avec le bot !",
+    },
+  });
+  await getApp(guildCommandsID).commands.post({
+    data: {
+      name: "say",
+      description: "Parle à travers le Bot",
+      options: [
+        {
+          name: "message",
+          description: "Ton Message",
+          required: true,
+          type: 3, // String
+        },
+        {
+          name: "embed",
+          description: `"oui" ou "non"`,
+          required: false,
+          type: 3, // String
+        },
+      ],
+    },
+  });
+  await getApp(guildCommandsID).commands.post({
+    data: {
+      name: "help",
+      description: "Toutes les commandes du bot",
+    },
+  });
 
   client.ws.on("INTERACTION_CREATE", async (interaction) => {
-    const command = interaction.data.name.toLowerCase();
+    const { name, options } = interaction.data;
+    const command = name.toLowerCase();
+
+    const args = {};
+
+    if (options) {
+      for (const option of options) {
+        const { name, value } = option;
+        args[name] = value;
+      }
+    }
 
     if (command === "ping") {
-      client.api.interactions(interaction.id, interaction.token).callback.post({
-        data: {
-          type: 4,
-          data: {
-            content: "pong",
-          },
-        },
-      });
+      replyToCommand(interaction, "pong🏓");
+    } else if (command === "say") {
+      if (args.embed && args.embed === "oui") {
+        const embed = new MessageEmbed()
+          .setTitle("ANNONCE:")
+          .addField("Message", args.message, true)
+          .setTimestamp();
+        replyToCommand(interaction, embed);
+      } else {
+        replyToCommand(interaction, args.message);
+      }
+    } else if (command === "help") {
+      const embed = new MessageEmbed()
+        .setColor(0xffc300)
+        .setTitle("Comment utiliser IlinguBOT ?")
+        .setDescription(
+          `
+      _ping: affiche ton ping
+      _lvl: affiche ton niveau sur le serv
+      _say <ton message>: dit un message de façon anonyme
+      _check <url>: Vérifie si cette url est dangereuse ou nan
+      \t_say embed <ton message>: dit un message avec un embed
+      \t_say embedimg <ton message>: dit in message avec un embed imagé
+      _rps: fait un pierre-feuilles-ciseaux avec le bot
+      _meme: (à faire dans le salon meme) met un meme aléatoirement
+      _rda x x: te donne un nombre aléatoirement entre le 1er x et le 2ème, ex: _rda 5 8 (nombre aléatoire entre 5 et 8)
+      _timer <time> (ex: _timer 1min30s / _timer 120s), MAXIMUN = 2H/MINIMUM = 10S
+    `
+        )
+        .setTimestamp();
+      replyToCommand(interaction, embed);
     }
   });
 });
@@ -462,7 +548,11 @@ client.on("message", async (message) => {
       .setColor(0xffc300)
       .setTitle(
         `⭕Niveau de <@${
-          !Mention ? message.author.id : message.mentions.users.first().id
+          !Mention
+            ? client.users.cache.find((us) => us.id === message.author.id).id
+            : client.users.cache.find(
+                (us) => us.id === message.mentions.users.first().id
+              ).id
         }>⭕`
       )
       .setDescription(
