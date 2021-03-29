@@ -29,8 +29,7 @@ const lookup = require("safe-browse-url-lookup")({
 
 // Var
 const chooseArr = ["⛰", "🧻", "✂"];
-// let ignored = false;
-
+const guildCommandsID = "823815537138073610";
 // Fn
 const POSTMessage = (AllMessage, channel, MessageID, guild) => {
   // 172800000 -> Ms of 2days
@@ -133,11 +132,46 @@ function isValidHttpUrl(string) {
   }
 }
 
+const getApp = (guildID) => {
+  const app = client.api.applications(client.user.id);
+  if (guildID) {
+    app.guilds(guildID);
+  }
+  return app;
+};
+
 // BOT
-client.on("ready", () => {
+client.on("ready", async () => {
   console.log(`I'm now online, my name is ${client.user.username}`);
   client.user.setActivity("du porno ^^", {
     type: "WATCHING",
+  });
+
+  const commands = await getApp(guildCommandsID).commands.get();
+
+  // Add
+  if (commands.length === 0) {
+    await getApp(guildCommandsID).commands.post({
+      data: {
+        name: "ping",
+        description: "Fait un ping pong avec le bot !",
+      },
+    });
+  }
+
+  client.ws.on("INTERACTION_CREATE", async (interaction) => {
+    const command = interaction.data.name.toLowerCase();
+
+    if (command === "ping") {
+      client.api.interactions(interaction.id, interaction.token).callback.post({
+        data: {
+          type: 4,
+          data: {
+            content: "pong",
+          },
+        },
+      });
+    }
   });
 });
 
