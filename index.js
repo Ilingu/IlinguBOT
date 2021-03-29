@@ -303,12 +303,20 @@ client.on("emojiCreate", async (emoji) => {
 });
 
 client.on("guildCreate", async (gData) => {
-  db.collection("guilds").doc(gData.id).set({
-    guildID: gData.id,
-    guildName: gData.name,
-    messageImageToSuppr: [],
-    levels: {},
-  });
+  db.collection("guilds")
+    .doc(gData.id)
+    .get()
+    .then((doc) => {
+      if (!doc.exists) {
+        db.collection("guilds").doc(gData.id).set({
+          guildID: gData.id,
+          guildName: gData.name,
+          messageImageToSuppr: [],
+          levels: {},
+        });
+      }
+    })
+    .catch(console.error);
 });
 
 client.on("message", async (message) => {
