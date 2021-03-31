@@ -384,11 +384,12 @@ client.on("message", async (message) => {
       .catch(console.error);
   }
 
-  if (message.channel.name === "annonces") {
+  if (message.channel.name === "annonces" && message.author.bot) {
     const EmojiVu = message.guild.emojis.cache.find(
       (emoji) => emoji.name == "Vu"
     );
     message.react(message.guild.emojis.cache.get(EmojiVu.id));
+    return;
   }
   if (message.author.bot) return;
   // Leveling Sys
