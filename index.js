@@ -491,10 +491,10 @@ client.on("message", async (message) => {
               result.undetected + result.timeout
             } n'ont/n'a rien renvoyé ❔)`
           );
-          const msg = await message.channel.send(
+          message.channel.send(
             `Vote de la communautée (la communauté d'internet te disent si ils ont trouvé cette url dangereuse ou nan, cette info ne sera pas prise en compte dans la conclusion, c'est à titre indicatif) ->\n__INOFFENSIF__: ${CommuVotes.harmless} 🔰\n__TRÉS DANGEREUSE__: ${CommuVotes.malicious} ❌`
           );
-          const msg = await message.channel.send(
+          message.channel.send(
             `<@${message.author.id}>, Au final:\n${
               result.malicious >= 1
                 ? "❌**TRÉS DANGEREUSE ET INFÉCTÉE !!!**❌, je te conseillerais de ❌**NE SURTOUT PAS L'OUVRIR !**❌"
