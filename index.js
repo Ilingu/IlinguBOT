@@ -470,14 +470,14 @@ client.on("message", async (message) => {
           return;
         }
 
-        console.log(JSON.stringify(res), JSON.stringify(res).data);
+        console.log(JSON.parse(res), JSON.parse(res).data);
 
         try {
           const {
             last_analysis_stats: result,
             last_analysis_results: allAnalyses,
             total_votes: CommuVotes,
-          } = JSON.stringify(res).data.attributes;
+          } = JSON.parse(res).data.attributes;
           msg.edit(
             `<@${message.author.id}>\nSur les ${
               Object.keys(allAnalyses).length
