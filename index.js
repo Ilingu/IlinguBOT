@@ -470,8 +470,6 @@ client.on("message", async (message) => {
           return;
         }
 
-        console.log(JSON.parse(res), JSON.parse(res).data);
-
         try {
           const {
             last_analysis_stats: result,
