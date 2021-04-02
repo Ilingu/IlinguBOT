@@ -4,6 +4,9 @@ const firebase = require("firebase/app");
 const admin = require("firebase-admin");
 const { promptMessage } = require("./functions");
 const randomPuppy = require("random-puppy");
+// Init CheckUrl
+const nvt = require("node-virustotal");
+const defaultTimedInstance = nvt.makeAPI();
 
 // Initialize Firebase
 const serviceAccount = require("./serviceAccount.json");
@@ -20,11 +23,6 @@ const client = new Client({
 });
 config({
   path: __dirname + "/.env",
-});
-
-// Init CheckUrl
-const lookup = require("safe-browse-url-lookup")({
-  apiKey: process.env.GOOGLETOKEN,
 });
 
 // Var
@@ -457,23 +455,17 @@ client.on("message", async (message) => {
       args[0].trim().length !== 0 &&
       isValidHttpUrl(args[0])
     ) {
-      lookup
-        .checkSingle(args[0])
-        .then((isMalicious) => {
-          if (isMalicious) {
-            message.channel.send(
-              `❌**<@${message.author.id}>! NE CLICK SURTOUT PAS ! C'EST UNE URL INFÉCTÉE ET DANGEREUSE ! ELLE EST L'INCARNATION DU DIABLE !!!**❌`
-            );
-          } else {
-            message.channel.send(
-              `🔰<@${message.author.id}>, cette URL n'est à première vue pas dangereuse, tous les tests indique qu'elle est safe, maintenant on est sur internet alors soi prudent (http et https par exemple...)🔰`
-            );
-          }
-        })
-        .catch((err) => {
-          console.log("Something went wrong.");
-          console.error(err);
-        });
+      const hashed = nvt.sha256("args[0]");
+      const URLChecker = defaultTimedInstance.urlLookup(hashed, (err, res) => {
+        if (err) {
+          console.log("Well, crap.");
+          console.log(err);
+          return;
+        }
+        console.log(JSON.stringify(res), res);
+        return;
+      });
+      console.log(URLChecker);
     } else {
       return message
         .reply("Merci de me donner une url **VALIDE**")

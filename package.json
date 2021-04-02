@@ -16,6 +16,7 @@
     "dotenv": "^8.2.0",
     "firebase": "^8.2.5",
     "firebase-admin": "^9.4.2",
+    "node-virustotal": "^3.32.0",
     "random-puppy": "^1.1.0",
     "safe-browse-url-lookup": "^0.1.1"
   }
