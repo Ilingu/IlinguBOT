@@ -4,6 +4,7 @@ const firebase = require("firebase/app");
 const admin = require("firebase-admin");
 const { promptMessage } = require("./functions");
 const randomPuppy = require("random-puppy");
+const Brainfuck = require("brainfuck-compiler/brainfuck");
 
 // Initialize Firebase
 const serviceAccount = require("./serviceAccount.json");
@@ -21,6 +22,7 @@ const client = new Client({
 config({
   path: __dirname + "/.env",
 });
+Brainfuck.config({ memorySize: 256, bits: 16 });
 
 // Init CheckUrl
 const nvt = require("node-virustotal");
@@ -626,6 +628,19 @@ client.on("message", async (message) => {
       .setFooter(client.user.username, client.user.displayAvatarURL());
 
     message.channel.send(Embed);
+  } else if (cmd === "encrypt") {
+    if (message.deletable) message.delete();
+    if (args.length < 1)
+      return message
+        .reply("Encrypter/Decrypter Rien ?!")
+        .then((m) => m.delete({ timeout: 5000 }));
+
+    const Compiled = Brainfuck.compile(args[0]);
+    let buf = [];
+    Compiled.run("", (num, char) => {
+      buf = [...buf, char];
+    });
+    message.channel.send(buf.join(""));
   } else if (cmd === "help") {
     if (message.deletable) message.delete();
     const Embed = new MessageEmbed()
