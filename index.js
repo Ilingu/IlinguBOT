@@ -4,9 +4,6 @@ const firebase = require("firebase/app");
 const admin = require("firebase-admin");
 const { promptMessage } = require("./functions");
 const randomPuppy = require("random-puppy");
-// Init CheckUrl
-const nvt = require("node-virustotal");
-const defaultTimedInstance = nvt.makeAPI();
 
 // Initialize Firebase
 const serviceAccount = require("./serviceAccount.json");
@@ -24,6 +21,11 @@ const client = new Client({
 config({
   path: __dirname + "/.env",
 });
+
+// Init CheckUrl
+const nvt = require("node-virustotal");
+const defaultTimedInstance = nvt.makeAPI();
+defaultTimedInstance.setKey(process.env.VIRUSTOTALTOKEN); // SetKey
 
 // Var
 const chooseArr = ["⛰", "🧻", "✂"];
@@ -455,7 +457,10 @@ client.on("message", async (message) => {
       args[0].trim().length !== 0 &&
       isValidHttpUrl(args[0])
     ) {
-      const hashed = nvt.sha256("args[0]");
+      const hashed = nvt.sha256(args[0]);
+      const msg = await message.channel.send(
+        `Processing..., vérification de l'url en cours, veuillez patienté (~30s)`
+      );
       const URLChecker = defaultTimedInstance.urlLookup(hashed, (err, res) => {
         if (err) {
           console.log("Well, crap.");
@@ -465,7 +470,6 @@ client.on("message", async (message) => {
         console.log(JSON.stringify(res), res);
         return;
       });
-      console.log(URLChecker);
     } else {
       return message
         .reply("Merci de me donner une url **VALIDE**")
