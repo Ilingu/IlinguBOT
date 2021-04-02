@@ -452,6 +452,7 @@ client.on("message", async (message) => {
       return message
         .reply("Comment veut tu que je vérifie une url inexistante -_- ?!")
         .then((m) => m.delete({ timeout: 5000 }));
+
     if (
       typeof args[0] === "string" &&
       args[0].trim().length !== 0 &&
@@ -466,6 +467,7 @@ client.on("message", async (message) => {
           msg.edit(
             `( <@${message.author.id}> )\n❌ERREUR❌pour une raison inconnu, il m'est impossible de vérifier cette url, réessaie ultérieument.`
           );
+          if (message.deletable) message.delete();
           console.log(err);
           return;
         }
@@ -516,11 +518,14 @@ client.on("message", async (message) => {
                 : "❔ ERREUR ❔ Aucune données envoyées, réessaie ultérieument."
             }`
           );
+          if (result.malicious >= 1 || result.suspicious >= 1)
+            if (message.deletable) message.delete();
         } catch (err) {
           console.error(err);
           message.channel.send(
             `❌ERREUR❌ problème dans le script... <-- A BA NANNNNNN (UI là c'est de ma faute, je savais que j'étais le pire dev 💢)`
           );
+          if (message.deletable) message.delete();
         }
       });
     } else {
