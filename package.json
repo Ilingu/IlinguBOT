@@ -4,7 +4,7 @@
   "description": "My BOT Discord who evol in future",
   "main": "index.js",
   "engines": {
-    "node": "12.18.2"
+    "node": "14.16.0"
   },
   "scripts": {
     "start": "node index.js"

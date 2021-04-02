@@ -472,7 +472,7 @@ client.on("message", async (message) => {
             return;
           }
 
-          console.log(res, res?.data, res?.data?.attributes);
+          console.log(res, res.data);
           try {
             const {
               last_analysis_stats: result,
