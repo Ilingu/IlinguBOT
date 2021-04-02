@@ -169,10 +169,6 @@ const createAPIMessage = async (interaction, content) => {
   return { ...data, files };
 };
 
-const readObject = (obj) => {
-  console.log(obj, obj.data);
-};
-
 // BOT
 client.on("ready", async () => {
   console.log(`I'm now online, my name is ${client.user.username}`);
@@ -474,14 +470,14 @@ client.on("message", async (message) => {
           return;
         }
 
-        readObject(res);
+        console.log(JSON.stringify(res), JSON.stringify(res).data);
 
         try {
           const {
             last_analysis_stats: result,
             last_analysis_results: allAnalyses,
             total_votes: CommuVotes,
-          } = res.data.attributes;
+          } = JSON.stringify(res).data.attributes;
           msg.edit(
             `<@${message.author.id}>\nSur les ${
               Object.keys(allAnalyses).length
