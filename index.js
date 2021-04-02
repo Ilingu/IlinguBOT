@@ -169,6 +169,10 @@ const createAPIMessage = async (interaction, content) => {
   return { ...data, files };
 };
 
+const readObject = (obj) => {
+  console.log(obj, obj.data);
+};
+
 // BOT
 client.on("ready", async () => {
   console.log(`I'm now online, my name is ${client.user.username}`);
@@ -470,18 +474,7 @@ client.on("message", async (message) => {
           return;
         }
 
-        function getSafe(fn) {
-          try {
-            return fn();
-          } catch (e) {
-            return "nOTHING";
-          }
-        }
-
-        console.log(
-          getSafe(() => res.data),
-          getSafe(() => res.data.attributes)
-        );
+        readObject(res);
 
         try {
           const {
