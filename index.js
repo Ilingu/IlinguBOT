@@ -461,75 +461,81 @@ client.on("message", async (message) => {
       const msg = await message.channel.send(
         `Processing..., vérification de l'url en cours, veuillez patienté (~30s)`
       );
-      const URLChecker = defaultTimedInstance.urlLookup(
-        hashed,
-        async (err, res) => {
-          if (err) {
-            msg.edit(
-              `( <@${message.author.id}> )\n❌ERREUR❌pour une raison inconnu, il m'est impossible de vérifier cette url, réessaie ultérieument.`
-            );
-            console.log(err);
-            return;
-          }
-
-          console.log(
-            JSON.parse(JSON.stringify(res)),
-            JSON.parse(JSON.stringify(res)).data
+      const URLChecker = defaultTimedInstance.urlLookup(hashed, (err, res) => {
+        if (err) {
+          msg.edit(
+            `( <@${message.author.id}> )\n❌ERREUR❌pour une raison inconnu, il m'est impossible de vérifier cette url, réessaie ultérieument.`
           );
+          console.log(err);
+          return;
+        }
+
+        function getSafe(fn) {
           try {
-            const {
-              last_analysis_stats: result,
-              last_analysis_results: allAnalyses,
-              total_votes: CommuVotes,
-            } = JSON.parse(JSON.stringify(res)).data.attributes;
-            msg.edit(
-              `<@${message.author.id}>\nSur les ${
-                Object.keys(allAnalyses).length
-              } tests pour cette url:\n-**${result.harmless}** ${
-                result.harmless > 1
-                  ? "l'ont trouvé"
-                  : "seule l'a trouvé (donc vraiment pas ouf)"
-              } __INOFFENSIF__ 🔰\n-**${result.suspicious}** ${
-                result.suspicious > 1 ? "l'ont trouvé" : "seule l'a trouvé"
-              } __SUSPICIEUX__ ⭕\n-**${result.malicious}** ${
-                result.malicious > 1 ? "l'ont trouvé" : "seule l'a trouvé"
-              } __TRÉS DANGEREUSE__ ❌\n-(et ${
-                result.undetected + result.timeout
-              } n'ont/n'a rien renvoyé ❔)`
-            );
-            message.channel.send(
-              `Vote de la communautée (la communauté d'internet te disent si ils ont trouvé cette url dangereuse ou nan, cette info ne sera pas prise en compte dans la conclusion, c'est à titre indicatif) ->\n__INOFFENSIF__: ${CommuVotes.harmless} 🔰\n__TRÉS DANGEREUSE__: ${CommuVotes.malicious} ❌`
-            );
-            message.channel.send(
-              `<@${message.author.id}>, Au final:\n${
-                result.malicious >= 1
-                  ? "❌**TRÉS DANGEREUSE ET INFÉCTÉE !!!**❌, je te conseillerais de ❌**NE SURTOUT PAS L'OUVRIR !**❌"
-                  : result.suspicious >= 1
-                  ? "⭕**SUSPECTE**⭕, je te conseille de jetée un coup d'oeil à se quand pense la communauté (message qui est juste avant) et si tu veux y allé, __vasi avec un anti-virus et n'y rentre aucune infos perso__"
-                  : result.harmless >=
-                      Math.round(Object.keys(allAnalyses).length / 2) &&
-                    result.harmless <
-                      Math.round(Object.keys(allAnalyses).length / 1.5)
-                  ? "🔰**PLUTOT SÛR**🔰, c'est à dire qu'il n'y devrais avoir aucun problème mais fait attention car il n'y a que entre 50% et 75% des test qui disent qu'elle est inoffensif, les autres tests n'ont rien renvoyé."
-                  : result.harmless >=
-                      Math.round(Object.keys(allAnalyses).length / 1.5) &&
-                    result.harmless <
-                      Math.round(Object.keys(allAnalyses).length / 1.1)
-                  ? "🔰**SÛR ET INOFFENSIF**🔰, entre 75% et 95% des test disent qu'elle est inoffensif. Cela doit être dû au cookies et autres...."
-                  : result.harmless >=
-                    Math.round(Object.keys(allAnalyses).length / 1.1)
-                  ? "🔰**TRÉS SÛR ET INOFFENSIF**🔰, Aucun problème: url safe -> Plus de 95% des test disent qu'elle est inoffensif."
-                  : "❔ ERREUR ❔ Aucune données envoyées, réessaie ultérieument."
-              }`
-            );
-          } catch (err) {
-            console.error(err);
-            message.channel.send(
-              `❌ERREUR❌ problème dans le script... <-- A BA NANNNNNN (UI là c'est de ma faute, je savais que j'étais le pire dev 💢)`
-            );
+            return fn();
+          } catch (e) {
+            return "nOTHING";
           }
         }
-      );
+
+        console.log(
+          getSafe(() => res.data),
+          getSafe(() => res.data.attributes)
+        );
+
+        try {
+          const {
+            last_analysis_stats: result,
+            last_analysis_results: allAnalyses,
+            total_votes: CommuVotes,
+          } = res.data.attributes;
+          msg.edit(
+            `<@${message.author.id}>\nSur les ${
+              Object.keys(allAnalyses).length
+            } tests pour cette url:\n-**${result.harmless}** ${
+              result.harmless > 1
+                ? "l'ont trouvé"
+                : "seule l'a trouvé (donc vraiment pas ouf)"
+            } __INOFFENSIF__ 🔰\n-**${result.suspicious}** ${
+              result.suspicious > 1 ? "l'ont trouvé" : "seule l'a trouvé"
+            } __SUSPICIEUX__ ⭕\n-**${result.malicious}** ${
+              result.malicious > 1 ? "l'ont trouvé" : "seule l'a trouvé"
+            } __TRÉS DANGEREUSE__ ❌\n-(et ${
+              result.undetected + result.timeout
+            } n'ont/n'a rien renvoyé ❔)`
+          );
+          message.channel.send(
+            `Vote de la communautée (la communauté d'internet te disent si ils ont trouvé cette url dangereuse ou nan, cette info ne sera pas prise en compte dans la conclusion, c'est à titre indicatif) ->\n__INOFFENSIF__: ${CommuVotes.harmless} 🔰\n__TRÉS DANGEREUSE__: ${CommuVotes.malicious} ❌`
+          );
+          message.channel.send(
+            `<@${message.author.id}>, Au final:\n${
+              result.malicious >= 1
+                ? "❌**TRÉS DANGEREUSE ET INFÉCTÉE !!!**❌, je te conseillerais de ❌**NE SURTOUT PAS L'OUVRIR !**❌"
+                : result.suspicious >= 1
+                ? "⭕**SUSPECTE**⭕, je te conseille de jetée un coup d'oeil à se quand pense la communauté (message qui est juste avant) et si tu veux y allé, __vasi avec un anti-virus et n'y rentre aucune infos perso__"
+                : result.harmless >=
+                    Math.round(Object.keys(allAnalyses).length / 2) &&
+                  result.harmless <
+                    Math.round(Object.keys(allAnalyses).length / 1.5)
+                ? "🔰**PLUTOT SÛR**🔰, c'est à dire qu'il n'y devrais avoir aucun problème mais fait attention car il n'y a que entre 50% et 75% des test qui disent qu'elle est inoffensif, les autres tests n'ont rien renvoyé."
+                : result.harmless >=
+                    Math.round(Object.keys(allAnalyses).length / 1.5) &&
+                  result.harmless <
+                    Math.round(Object.keys(allAnalyses).length / 1.1)
+                ? "🔰**SÛR ET INOFFENSIF**🔰, entre 75% et 95% des test disent qu'elle est inoffensif. Cela doit être dû au cookies et autres...."
+                : result.harmless >=
+                  Math.round(Object.keys(allAnalyses).length / 1.1)
+                ? "🔰**TRÉS SÛR ET INOFFENSIF**🔰, Aucun problème: url safe -> Plus de 95% des test disent qu'elle est inoffensif."
+                : "❔ ERREUR ❔ Aucune données envoyées, réessaie ultérieument."
+            }`
+          );
+        } catch (err) {
+          console.error(err);
+          message.channel.send(
+            `❌ERREUR❌ problème dans le script... <-- A BA NANNNNNN (UI là c'est de ma faute, je savais que j'étais le pire dev 💢)`
+          );
+        }
+      });
     } else {
       return message
         .reply("Merci de me donner une url **VALIDE**")
