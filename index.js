@@ -83,18 +83,23 @@ const GetLevel = (guild) => {
 
 const LevelUp = (User, guild, Data) => {
   let AllData = { ...Data };
-  AllData[User].xp += Math.round(Math.random() * 10) + 2;
+  AllData[User].xp += Math.round(Math.random() * 20) + 10;
   AllData[User].nbMsg += 1;
 
-  if (AllData[User].xp >= 150 && Math.round(Math.random() * 10) <= 5) {
+  if (
+    AllData[User].xp >= 150 * AllData[User].lvl &&
+    Math.round(Math.random() * 10) <= 5
+  ) {
     AllData[User].xp = 0;
     AllData[User].lvl += 1;
     const channel = client.channels.cache.find((ch) => ch.name === "annonces");
-
+    const EmojiGG = message.guild.emojis.cache.find(
+      (emoji) => emoji.name == "GG"
+    );
     channel.send(
-      `${
+      `✅ <:${EmojiGG.name}:${EmojiGG.id}> ${
         client.users.cache.find((us) => us.id === User).username
-      }!\n✅Tu passes niv.${AllData[User].lvl}!`
+      }, Tu passes niveau ${AllData[User].lvl}!`
     );
   }
 
@@ -114,7 +119,7 @@ const CheckLevelUpUser = async (User, guild) => {
           levels: {
             ...Level,
             [User]: {
-              xp: Math.round(Math.random() * 10) + 2,
+              xp: Math.round(Math.random() * 20) + 10,
               lvl: 0,
               nbMsg: 1,
             },
@@ -612,16 +617,20 @@ client.on("message", async (message) => {
     const Embed = new MessageEmbed()
       .setColor(0xffc300)
       .setTitle(
-        `⭕Niveau de <@${
+        `⭕Niveau de ${
           !Mention
-            ? client.users.cache.find((us) => us.id === message.author.id).id
-            : client.users.cache.find(
-                (us) => us.id === message.mentions.users.first().id
-              ).id
-        }>⭕`
+            ? message.author.username
+            : message.mentions.users.first().username
+        }⭕`
       )
       .setDescription(
-        `**Ton niveau**: __${UserLvl.lvl}__\n**Ton XP**: __${UserLvl.xp}__\n**Nombres de messages au total**:__${UserLvl.nbMsg}__\n\n(PS: pour passer niveau supérieur il faut avoir minimun 150xp + un peu de chance 😋)`
+        `**Ton niveau**: __${UserLvl.lvl}__\n**Ton XP**: __${
+          UserLvl.xp
+        }__\n**Info**:\n- XP minimum pour lvl supérieur: __${
+          150 * UserLvl.lvl
+        }__\n- Progression: __${Math.round(
+          (UserLvl.xp / (150 * UserLvl.lvl)) * 100
+        )}%__\n- Nombres de messages au total: __${UserLvl.nbMsg}__`
       )
       .setTimestamp()
       .setAuthor(message.author.username, message.author.displayAvatarURL())
