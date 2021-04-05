@@ -93,9 +93,7 @@ const LevelUp = (User, guild, Data) => {
     AllData[User].xp = 0;
     AllData[User].lvl += 1;
     const channel = client.channels.cache.find((ch) => ch.name === "annonces");
-    const EmojiGG = message.guild.emojis.cache.find(
-      (emoji) => emoji.name == "GG"
-    );
+    const EmojiGG = message.emojis.cache.find((emoji) => emoji.name == "GG");
     channel.send(
       `✅ <:${EmojiGG.name}:${EmojiGG.id}> ${
         client.users.cache.find((us) => us.id === User).username
