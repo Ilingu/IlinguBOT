@@ -456,6 +456,7 @@ client.on("message", async (message) => {
     );
   } else if (cmd === "check") {
     if (message.channel.name !== "🤖commandes-bot") {
+      if (message.deletable) message.delete();
       const channelCmdBotID = message.guild.channels.cache.find(
         (ch) => ch.name === "🤖commandes-bot"
       ).id;
@@ -583,6 +584,7 @@ client.on("message", async (message) => {
     }
   } else if (cmd === "rps") {
     if (message.channel.name !== "🤖commandes-bot") {
+      if (message.deletable) message.delete();
       const channelCmdBotID = message.guild.channels.cache.find(
         (ch) => ch.name === "🤖commandes-bot"
       ).id;
@@ -628,6 +630,7 @@ client.on("message", async (message) => {
     }
   } else if (cmd === "lvl") {
     if (message.channel.name !== "🤖commandes-bot") {
+      if (message.deletable) message.delete();
       const channelCmdBotID = message.guild.channels.cache.find(
         (ch) => ch.name === "🤖commandes-bot"
       ).id;
