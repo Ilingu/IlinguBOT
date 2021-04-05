@@ -455,6 +455,16 @@ client.on("message", async (message) => {
       )} ms** -> à part si vous connaissez il ne vous servira à rien...)*`
     );
   } else if (cmd === "check") {
+    if (message.channel.name !== "🤖commandes-bot") {
+      const channelCmdBotID = message.guild.channels.cache.find(
+        (ch) => ch.name === "🤖commandes-bot"
+      ).id;
+      return message
+        .reply(
+          `Cette commande ce fait dans le <#${channelCmdBotID}>, merci de le respecter 😊`
+        )
+        .then((m) => m.delete({ timeout: 12000 }));
+    }
     if (args.length < 1)
       return message
         .reply("Comment veut tu que je vérifie une url inexistante -_- ?!")
@@ -572,6 +582,16 @@ client.on("message", async (message) => {
       message.channel.send(args.join(" "));
     }
   } else if (cmd === "rps") {
+    if (message.channel.name !== "🤖commandes-bot") {
+      const channelCmdBotID = message.guild.channels.cache.find(
+        (ch) => ch.name === "🤖commandes-bot"
+      ).id;
+      return message
+        .reply(
+          `Cette commande ce fait dans le <#${channelCmdBotID}>, merci de le respecter 😊`
+        )
+        .then((m) => m.delete({ timeout: 12000 }));
+    }
     const roleColor = message.guild.me.displayHexColor;
 
     const embed = new MessageEmbed()
@@ -607,6 +627,16 @@ client.on("message", async (message) => {
       }
     }
   } else if (cmd === "lvl") {
+    if (message.channel.name !== "🤖commandes-bot") {
+      const channelCmdBotID = message.guild.channels.cache.find(
+        (ch) => ch.name === "🤖commandes-bot"
+      ).id;
+      return message
+        .reply(
+          `Cette commande ce fait dans le <#${channelCmdBotID}>, merci de le respecter 😊`
+        )
+        .then((m) => m.delete({ timeout: 12000 }));
+    }
     let UserLvl = null;
     let Mention = false;
     if (args[0] && message.mentions) {
