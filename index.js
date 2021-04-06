@@ -420,7 +420,7 @@ client.on("message", async (message) => {
       .reply(
         `Votre message a été déplacé dans <#${channelPartage.id}> car il s'agit d'un lien.`
       )
-      .then((m) => m.delete({ timeout: 7000 }));
+      .then((m) => m.edit(`Lien redirigé sur <#${channelPartage.id}>`));
     if (message.deletable) message.delete();
     return;
   }
