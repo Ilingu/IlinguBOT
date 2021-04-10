@@ -412,20 +412,24 @@ client.on("message", async (message) => {
       (ch) => ch.name === "🔗partage"
     );
 
-    channelPartage.send(
-      `(Message de <@${message.author.id}>)\n${message.content}`
-    );
-
-    message
-      .reply(
-        `Votre message a été déplacé dans <#${channelPartage.id}> car il s'agit d'un lien.`
-      )
-      .then((m) => {
-        setTimeout(
-          () => m.edit(`Lien redirigé sur <#${channelPartage.id}>`),
-          10000
-        );
+    channelPartage
+      .send(`(Message de <@${message.author.id}>)\n${message.content}`)
+      .then((mRedirect) => {
+        message
+          .reply(
+            `Votre message a été déplacé dans <#${channelPartage.id}> car il s'agit d'un lien.\n__Votre Message:__ https://discord.com/channels/${guild}/${channelPartage.id}/${mRedirect.id}`
+          )
+          .then((m) => {
+            setTimeout(
+              () =>
+                m.edit(
+                  `Lien redirigé sur <#${channelPartage.id}>\n__Votre Message:__ https://discord.com/channels/${guild}/${channelPartage.id}/${mRedirect.id}`
+                ),
+              6000
+            );
+          });
       });
+
     if (message.deletable) message.delete();
     return;
   }
