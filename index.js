@@ -290,18 +290,14 @@ client.on("guildMemberAdd", async (member) => {
     .setTitle(`From r/${random} (Reddit)`)
     .setURL(`https://reddit.com/r/${random}`);
 
-  const channel = member.guild.channels.cache.find(
-    (ch) => ch.name === "🔥général"
-  );
+  const channel = client.channels.cache.find((ch) => ch.name === "🔥général");
 
   channel.send(`<@everyone>\nBienvenue <@${member.user.id}> !`);
   channel.send(embed);
 });
 
 client.on("guildMemberRemove", async (member) => {
-  const channel = member.guild.channels.cache.find(
-    (ch) => ch.name === "🔥général"
-  );
+  const channel = client.channels.cache.find((ch) => ch.name === "🔥général");
   channel.send(
     `<@everyone>\nSayonara <@${member.user.id}> 😥 (tu nous manqueras pas ^^)`
   );
