@@ -5,6 +5,7 @@ const admin = require("firebase-admin");
 const { promptMessage } = require("./functions");
 const randomPuppy = require("random-puppy");
 const Brainfuck = require("brainfuck-compiler/brainfuck");
+const ping = require("web-pingjs");
 
 // Initialize Firebase
 const serviceAccount = require("./serviceAccount.json");
@@ -231,7 +232,16 @@ client.on("ready", async () => {
     }
 
     if (command === "ping") {
-      replyToCommand(interaction, "pong🏓");
+      ping("https://google.com/")
+        .then((delta) => {
+          replyToCommand(
+            interaction,
+            `🏓 Pong\n✔✔ Votre Ping: **__${delta}__ ms** ✔✔\n(PS: Un ping supérieur à 125ms devient problèmatique)`
+          );
+        })
+        .catch((err) => {
+          replyToCommand(interaction, "pong🏓");
+        });
     } else if (command === "say") {
       if (args.embed && args.embed === "oui") {
         const embed = new MessageEmbed()
@@ -452,15 +462,18 @@ client.on("message", async (message) => {
   if (cmd === "ping") {
     if (message.deletable) message.delete();
     const msg = await message.channel.send(`🏓 Pinging...`);
-    const ping = Date.now() - message.createdTimestamp;
 
-    msg.edit(
-      `🏓 Pong\n✔✔ <@${
-        message.author.id
-      }> votre Ping est de **${ping} ms** ✔✔\nPS: Un ping supérieur à 125ms devient problèmatique\n*(Ping client **${Math.floor(
-        msg.createdAt - message.createdAt
-      )} ms** -> à part si vous connaissez il ne vous servira à rien...)*`
-    );
+    ping("https://google.com/")
+      .then((delta) => {
+        msg.edit(
+          `🏓 Pong\n✔✔ <@${message.author.id}> votre Ping est de **__${delta}__ ms** ✔✔\n(PS: Un ping supérieur à 125ms devient problèmatique)`
+        );
+      })
+      .catch((err) => {
+        msg.edit(
+          `❌ERREUR❌, je n'ai pas réussie à calculer ton ping, réessaye.`
+        );
+      });
   } else if (cmd === "check") {
     if (message.channel.name !== "🤖commandes-bot") {
       if (message.deletable) message.delete();
