@@ -82,10 +82,29 @@ const GetLevel = (guild) => {
   });
 };
 
-const LevelUp = (User, guild, Data) => {
+const XpByDefault = (MessageLength) => {
+  if (MessageLength <= 100) return 10;
+  if (MessageLength <= 200) return 12;
+  if (MessageLength <= 350) return 15;
+  if (MessageLength <= 500) return 25;
+  if (MessageLength <= 1000) return 50;
+  if (MessageLength <= 2000) return 100;
+  return 200;
+};
+
+const LevelUp = (User, guild, Data, MessageLength) => {
   let AllData = { ...Data };
-  AllData[User].xp += Math.round(Math.random() * 20) + 10;
+  // If last user message is under 1min -> return
+  if (
+    AllData[User].LastMessageTime &&
+    Date.now() - AllData[User].LastMessageTime >= 60000
+  )
+    return;
+  // ADD
+  AllData[User].xp +=
+    Math.round(Math.random() * 20) + XpByDefault(MessageLength);
   AllData[User].nbMsg += 1;
+  AllData[User].LastMessageTime = Date.now();
 
   if (
     AllData[User].xp >= 150 * AllData[User].lvl &&
@@ -107,10 +126,10 @@ const LevelUp = (User, guild, Data) => {
   });
 };
 
-const CheckLevelUpUser = async (User, guild) => {
+const CheckLevelUpUser = async (User, guild, MessageLength) => {
   try {
     const Level = await GetLevel(guild);
-    if (Level[User]) LevelUp(User, guild, Level);
+    if (Level[User]) LevelUp(User, guild, Level, MessageLength);
     else
       db.collection("guilds")
         .doc(guild)
@@ -121,6 +140,7 @@ const CheckLevelUpUser = async (User, guild) => {
               xp: Math.round(Math.random() * 20) + 10,
               lvl: 0,
               nbMsg: 1,
+              LastMessageTime: Date.now(),
             },
           },
         });
@@ -404,7 +424,7 @@ client.on("message", async (message) => {
   }
   if (message.author.bot) return;
   // Leveling Sys
-  CheckLevelUpUser(message.author.id, guild);
+  CheckLevelUpUser(message.author.id, guild, message.content.length);
 
   if (
     typeof message.content === "string" &&
@@ -746,7 +766,10 @@ client.on("message", async (message) => {
         .then((m) => m.delete({ timeout: 6000 }));
 
     const filter = (reaction, user) => {
-      return reaction.emoji.name === "Reverse" && user.id === message.author.id;
+      return (
+        ["❌", "🛑"].includes(reaction.emoji.name) &&
+        user.id === message.author.id
+      );
     };
 
     if (Time.split("min").length > 1 && Time.split("min")[1] === "") {
@@ -775,12 +798,12 @@ client.on("message", async (message) => {
       const NumberToSoustracteAtEachInterval = Math.round(MinutesInS / 10);
 
       const m = await message.channel.send(
-        `<@${message.author.id}> : Fin du minuteur dans ${MinutesInS} secondes`
+        `<@${message.author.id}> : Fin du minuteur dans **${MinutesInS}** secondes\n(PS: react avec ❌ ou 🛑 pour stop le timer)`
       );
       const TheInterval = setInterval(() => {
         MinutesInS -= NumberToSoustracteAtEachInterval;
         m.edit(
-          `<@${message.author.id}> : Fin du minuteur dans ${MinutesInS} secondes`
+          `<@${message.author.id}> : Fin du minuteur dans **${MinutesInS}** secondes\n(PS: react avec ❌ ou 🛑 pour stop le timer)`
         );
       }, Math.round(MinutesInS / 10) * 1000);
       const TheTimeout = setTimeout(() => {
@@ -828,12 +851,12 @@ client.on("message", async (message) => {
       const NumberToSoustracteAtEachInterval = Math.round(InS / 10);
 
       const m = await message.channel.send(
-        `<@${message.author.id}> : Fin du minuteur dans ${InS} secondes`
+        `<@${message.author.id}> : Fin du minuteur dans **${InS}** secondes\n(PS: react avec ❌ ou 🛑 pour stop le timer)`
       );
       const TheInterval = setInterval(() => {
         InS -= NumberToSoustracteAtEachInterval;
         m.edit(
-          `<@${message.author.id}> : Fin du minuteur dans ${InS} secondes`
+          `<@${message.author.id}> : Fin du minuteur dans **${InS}** secondes\n(PS: react avec ❌ ou 🛑 pour stop le timer)`
         );
       }, Math.round(InS / 10) * 1000);
       const TheTimeout = setTimeout(() => {
@@ -880,12 +903,12 @@ client.on("message", async (message) => {
       const NumberToSoustracteAtEachInterval = Math.round(Secondes / 10);
 
       const m = await message.channel.send(
-        `<@${message.author.id}> : Fin du minuteur dans ${Secondes} secondes`
+        `<@${message.author.id}> : Fin du minuteur dans **${Secondes}** secondes\n(PS: react avec ❌ ou 🛑 pour stop le timer)`
       );
       const TheInterval = setInterval(() => {
         Secondes -= NumberToSoustracteAtEachInterval;
         m.edit(
-          `<@${message.author.id}> : Fin du minuteur dans ${Secondes} secondes`
+          `<@${message.author.id}> : Fin du minuteur dans **${Secondes}** secondes\n(PS: react avec ❌ ou 🛑 pour stop le timer)`
         );
       }, Math.round(Secondes / 10) * 1000);
       const TheTimeout = setTimeout(() => {
