@@ -19,7 +19,6 @@
     "firebase-admin": "^9.4.2",
     "node-virustotal": "^3.32.0",
     "random-puppy": "^1.1.0",
-    "safe-browse-url-lookup": "^0.1.1",
-    "web-pingjs": "^1.0.1"
+    "safe-browse-url-lookup": "^0.1.1"
   }
 }

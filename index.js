@@ -5,10 +5,9 @@ const admin = require("firebase-admin");
 const { promptMessage } = require("./functions");
 const randomPuppy = require("random-puppy");
 const Brainfuck = require("brainfuck-compiler/brainfuck");
-const ping = require("web-pingjs");
 
 // Initialize Firebase
-const serviceAccount = require("./serviceAccount.json");
+const serviceAccount = require("./google-credentials.json");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -64,6 +63,82 @@ const UpdateMessageVar = (Data, guild) => {
   db.collection("guilds").doc(guild).update({
     messageImageToSuppr: Data,
   });
+};
+
+const UserDeleteImg = (guild, channel, MessageID) => {
+  db.collection("guilds")
+    .doc(guild)
+    .get()
+    .then((doc) => {
+      if (doc.exists) {
+        const Data = doc.data().messageImageToSuppr;
+        if (Data) {
+          Data.forEach((Msg, i) => {
+            if (Msg.MessageID === MessageID && Msg.channel === channel) {
+              Data.splice(i, 1);
+            }
+          });
+          UpdateMessageVar(Data, guild);
+        }
+      } else {
+        console.log("No such document!");
+      }
+    })
+    .catch(console.error);
+};
+
+const CheckMsgImg = (guild) => {
+  db.collection("guilds")
+    .doc(guild)
+    .get()
+    .then((doc) => {
+      if (doc.exists) {
+        const Data = doc.data().messageImageToSuppr;
+        if (Data) {
+          Data.forEach((Msg, i) => {
+            if (Msg.TimeStamp <= Date.now()) {
+              const channelOfMessage = client.channels.cache.find(
+                (ch) => ch.id === Msg.channel
+              );
+              channelOfMessage.messages
+                .fetch(Msg.MessageID)
+                .then((msgSupp) => {
+                  msgSupp.delete();
+                })
+                .catch(console.error);
+              Data.splice(i, 1);
+            }
+          });
+          UpdateMessageVar(Data, guild);
+        }
+      } else {
+        console.log("No such document!");
+      }
+    })
+    .catch(console.error);
+};
+
+const CreateNewImg = (guild, channel, MessageID) => {
+  db.collection("guilds")
+    .doc(guild)
+    .get()
+    .then((doc) => {
+      if (doc.exists) {
+        const Data = doc.data();
+        if (Data.messageImageToSuppr)
+          POSTMessage(
+            Data.messageImageToSuppr,
+            channel,
+            MessageID,
+            guild,
+            Data.TimeImgDelete
+          );
+        else POSTMessage(false, channel, MessageID, guild, Data.TimeImgDelete);
+      } else {
+        console.log("No such document!");
+      }
+    })
+    .catch(console.error);
 };
 
 const GetLevel = (guild) => {
@@ -184,27 +259,7 @@ const replyToCommand = async (interaction, replyText) => {
   });
 };
 
-const createAPIMessage = async (interaction, content) => {
-  const { data, files } = await APIMessage.create(
-    client.channels.resolve(interaction.channel_id),
-    content
-  )
-    .resolveData()
-    .resolveFiles();
-
-  return { ...data, files };
-};
-
-// BOT
-client.on("ready", async () => {
-  console.log(`I'm now online, my name is ${client.user.username}`);
-  client.user.setActivity("du porno ^^", {
-    type: "WATCHING",
-  });
-
-  const commands = await getApp(guildCommandsID).commands.get();
-
-  // Add
+const AddSlashCommandForGuildID = async (guildCommandsID) => {
   await getApp(guildCommandsID).commands.post({
     data: {
       name: "ping",
@@ -237,7 +292,32 @@ client.on("ready", async () => {
       description: "Toutes les commandes du bot",
     },
   });
+};
 
+const createAPIMessage = async (interaction, content) => {
+  const { data, files } = await APIMessage.create(
+    client.channels.resolve(interaction.channel_id),
+    content
+  )
+    .resolveData()
+    .resolveFiles();
+
+  return { ...data, files };
+};
+
+// BOT
+client.on("ready", async () => {
+  console.log(`I'm now online, my name is ${client.user.username}`);
+  client.user.setActivity("du porno ^^", {
+    type: "WATCHING",
+  });
+
+  /* "/" commands */
+  // Create
+  client.guilds.cache.forEach(async (guildCommandsID) => {
+    AddSlashCommandForGuildID(guildCommandsID.id);
+  });
+  // Interaction
   client.ws.on("INTERACTION_CREATE", async (interaction) => {
     const { name, options } = interaction.data;
     const command = name.toLowerCase();
@@ -334,6 +414,19 @@ client.on("emojiCreate", async (emoji) => {
 });
 
 client.on("guildCreate", async (gData) => {
+  // Add "/" cmd
+  AddSlashCommandForGuildID(gData.id);
+  // Msg Of Hello
+  const channel = client.channels.cache.find((ch) => ch.type === "text");
+  const msg = await channel.send(
+    new MessageEmbed()
+      .setColor(0xffc300)
+      .setTitle(`**Thank you for inviting me into ${gData.name}!**✅`)
+      .setDescription("_Try `ac!help` to see all my commands\n_Prefix: `ac!`")
+      .setTimestamp()
+      .setFooter(client.user.username, client.user.displayAvatarURL())
+  );
+  // Connect Guild To DB
   db.collection("guilds")
     .doc(gData.id)
     .get()
@@ -345,9 +438,26 @@ client.on("guildCreate", async (gData) => {
           messageImageToSuppr: [],
           levels: {},
         });
+      } else {
+        msg.edit(
+          new MessageEmbed()
+            .setColor(0xffc300)
+            .setTitle(
+              `**Ho Ho Happy to see you again, I missed you, ${gData.name}**✅`
+            )
+            .setDescription("-Try `_help` to see all my commands\n-Prefix: `_`")
+            .setTimestamp()
+            .setFooter(client.user.username, client.user.displayAvatarURL())
+        );
       }
     })
     .catch(console.error);
+});
+
+client.on("guildDelete", async (gData) => {
+  console.log(
+    `Connection Lost with ${gData.name} guild (GuildID: ${gData.id})`
+  );
 });
 
 client.on("message", async (message) => {
@@ -370,49 +480,9 @@ client.on("message", async (message) => {
     channel = message.channel.id,
     MessageID = message.id;
   if (message.attachments.size > 0) {
-    db.collection("guilds")
-      .doc(guild)
-      .get()
-      .then((doc) => {
-        if (doc.exists) {
-          const Data = doc.data().messageImageToSuppr;
-          if (Data) POSTMessage(Data, channel, MessageID, guild);
-          else POSTMessage(false, channel, MessageID, guild);
-        } else {
-          console.log("No such document!");
-        }
-      })
-      .catch(console.error);
+    CreateNewImg(guild, channel, MessageID);
   } else {
-    // Check MsgImg
-    db.collection("guilds")
-      .doc(guild)
-      .get()
-      .then((doc) => {
-        if (doc.exists) {
-          const Data = doc.data().messageImageToSuppr;
-          if (Data) {
-            Data.forEach((Msg, i) => {
-              if (Msg.TimeStamp <= Date.now()) {
-                const channelOfMessage = client.channels.cache.find(
-                  (ch) => ch.id === Msg.channel
-                );
-                channelOfMessage.messages
-                  .fetch(Msg.MessageID)
-                  .then((msgSupp) => {
-                    msgSupp.delete();
-                  })
-                  .catch(console.error);
-                Data.splice(i, 1);
-                UpdateMessageVar(Data, guild);
-              }
-            });
-          }
-        } else {
-          console.log("No such document!");
-        }
-      })
-      .catch(console.error);
+    CheckMsgImg(guild);
   }
 
   if (message.channel.name === "annonces" && message.author.bot) {
@@ -476,20 +546,13 @@ client.on("message", async (message) => {
   if (!message.content.startsWith(prefix)) return;
 
   if (cmd === "ping") {
-    if (message.deletable) message.delete();
-    const msg = await message.channel.send(`🏓 Pinging...`);
-
-    ping("https://google.com/")
-      .then((delta) => {
-        msg.edit(
-          `🏓 Pong\n✔✔ <@${message.author.id}> votre Ping est de **__${delta}__ ms** ✔✔\n(PS: Un ping supérieur à 125ms devient problèmatique)`
-        );
-      })
-      .catch((err) => {
-        msg.edit(
-          `❌ERREUR❌, je n'ai pas réussie à calculer ton ping, réessaye.`
-        );
-      });
+    if (message.deletable) message.delete({ timeout: 5000 });
+    const Embed = new MessageEmbed()
+      .setColor(0xffc300)
+      .setTitle(`🏓 ${message.author.username}'s ping`)
+      .addField("⏳__You:__", `**${Date.now() - message.createdTimestamp}**ms`)
+      .addField("⏱__BOT__", `*${Math.round(client.ws.ping)}*ms`);
+    message.channel.send(Embed);
   } else if (cmd === "check") {
     if (message.channel.name !== "🤖commandes-bot") {
       if (message.deletable) message.delete();
@@ -968,6 +1031,17 @@ client.on("message", async (message) => {
     }
   } else {
     if (message.deletable) message.delete();
+  }
+});
+
+client.on("messageDelete", (message) => {
+  const guild = message.guild.id,
+    channel = message.channel.id,
+    MessageID = message.id;
+  if (message.attachments.size > 0) {
+    UserDeleteImg(guild, channel, MessageID);
+  } else {
+    CheckMsgImg(guild);
   }
 });
 
