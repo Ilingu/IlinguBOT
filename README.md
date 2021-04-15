@@ -1,6 +1,6 @@
 # AUTOCLEANER BOT
 
-### PRivate BOT for a specific server (not make for multiple server).
+### Private BOT for a specific server (not make for multiple server).
 
 # Installation
 
