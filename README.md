@@ -1,33 +1,13 @@
-# PRIVATE BOT
+# AUTOCLEANER BOT
 
-[THIS BOT IS PRIVATE](https://tytoux.yj.fr)
-Copyright (©) 2019-2020 IlinguCorp(Chollet, Arthur), Inc.
-This BOT are the propity of IlinguCorp, Inc., Nobody are allowed to copy or
-distributed OR MODIFIE some version of MY BOT!!!
-
-# File and Folder
-
-### ©2020 All file and folder rights reserved at IlinguCorp® (Chollet, Arthur)
+### PRivate BOT for a specific server (not make for multiple server).
 
 # Installation
 
-## NO DOWNLOADS ARE ALLOWED
+[Invite my bot into your server](https://discord.com/api/oauth2/authorize?client_id=682344016527884340&permissions=8&scope=bot%20applications.commands)
+And follow the steps
 
-## Contributing
+##### AUTHOR: [Ilingu](https://github.com/Ilingu)
 
-### Principal Developper: Chollet, Arthur => All rights reserved
-
-### Principal Admin (same person of 1 line before) : Chollet, Arthur => All rights reserved
-
-## Norme And Cookies
-
-### All technologies are modern and up to date.
-
-## No Cookies in this BOT : you're data aren't collect.
-
-## License
-
-[IlinguCorp](https://tytoux.yj.fr/cgu/)
-
-"signature of me", 13 January 2020
-Ilingu, Client and principal developer of this BOT
+2021
+GNU AFFERO GENERAL PUBLIC LICENSE V3
