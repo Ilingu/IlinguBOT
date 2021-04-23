@@ -738,15 +738,16 @@ client.on("message", async (message) => {
       );
       const UserInteract = message.guild.members.cache.find(
         (us) => us.id === UserToMute
-      ).roles;
-      UserInteract.cache.forEach((role) => {
-        UserInteract.remove(role);
+      );
+      UserInteract.roles.cache.forEach((role) => {
+        UserInteract.roles.remove(role);
       });
-      UserInteract.add(MuteRole);
+      UserInteract.roles.add(MuteRole);
       addNewMute(UserToMute, guild);
-      message.author.send(
+      UserInteract.send(
         `Vous avez été **__mute__** de ${message.guild.name} pendant __15min__.\nPour Unmute veuillez suivre les instruction de ce serveur.`
       );
+      message.author.send(`L'utilisateur a bien été mute.`);
     }
     if (message.deletable) message.delete();
   } else if (cmd === "check") {
