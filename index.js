@@ -136,7 +136,7 @@ const CreateNewImg = (guild, channel, MessageID) => {
     .catch(console.error);
 };
 
-const POSTMute = (UserToMute, Data = [], guild) => {
+const POSTMute = (UserToMute, Data, guild) => {
   // 900000 -> 15min in MS
   db.collection("guilds")
     .doc(guild)
@@ -159,7 +159,7 @@ const addNewMute = (UserToMute, guild) => {
       if (doc.exists) {
         const Data = doc.data();
         if (Data.Mute) POSTMute(UserToMute, Data.Mute, guild);
-        else POSTMute(UserToMute, guild);
+        else POSTMute(UserToMute, [], guild);
       } else {
         console.log("No such document!");
       }
@@ -175,22 +175,22 @@ const CheckUnMute = (UserToUnMute, guild) => {
       .then((doc) => {
         if (doc.exists) {
           const Data = doc.data().Mute;
-          if (!Data) return resolve(true);
-          let IsUnMute = false;
+          if (!Data) return resolve("Yes");
+          let IsUnMute = "No";
           Data.forEach((UserMute) => {
             if (
               UserMute.UserID === UserToUnMute &&
               UserMute.UnMute <= Date.now()
             ) {
-              IsUnMute = true;
+              IsUnMute = "Yes";
             }
           });
           resolve(IsUnMute);
         } else {
-          reject(false);
+          reject("No");
         }
       })
-      .catch(() => reject(false));
+      .catch(() => reject("No"));
   });
 };
 
@@ -654,7 +654,7 @@ client.on("message", async (message) => {
   } else if (cmd === "unmute") {
     if (message.channel.name !== "muted") return;
     const CanUnMute = await CheckUnMute(message.author.id, guild);
-    if (!CanUnMute || !message.guild.available)
+    if (CanUnMute === "No" || !message.guild.available)
       return message.author.send(
         "❌__Failed__❌: Tu n'as pas fini ton temps minimal de mute."
       );
