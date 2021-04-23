@@ -175,22 +175,22 @@ const CheckUnMute = (UserToUnMute, guild) => {
       .then((doc) => {
         if (doc.exists) {
           const Data = doc.data().Mute;
-          if (!Data) return resolve("Yes");
-          let IsUnMute = "No";
+          if (!Data) return resolve(true);
+          let IsUnMute = false;
           Data.forEach((UserMute) => {
             if (
               UserMute.UserID === UserToUnMute &&
               UserMute.UnMute <= Date.now()
             ) {
-              IsUnMute = "Yes";
+              IsUnMute = true;
             }
           });
           resolve(IsUnMute);
         } else {
-          reject("No");
+          resolve(false);
         }
       })
-      .catch(() => reject("No"));
+      .catch(() => resolve(false));
   });
 };
 
@@ -654,9 +654,12 @@ client.on("message", async (message) => {
       .addField("⏱__BOT__", `*${Math.round(client.ws.ping)}*ms`);
     message.channel.send(Embed);
   } else if (cmd === "unmute") {
-    if (message.channel.name !== "muted") return;
+    if (message.channel.name !== "muted") {
+      if (message.deletable) message.delete();
+      return;
+    }
     const CanUnMute = await CheckUnMute(message.author.id, guild);
-    if (CanUnMute === "No" || !message.guild.available) {
+    if (!CanUnMute || !message.guild.available) {
       if (message.deletable) message.delete();
       return message.author.send(
         "❌__Failed__❌: Tu n'as pas fini ton temps minimal de mute."
@@ -693,7 +696,13 @@ client.on("message", async (message) => {
         .setAuthor(message.author.username, message.author.displayAvatarURL())
         .setFooter(client.user.username, client.user.displayAvatarURL())
     );
-    const reacted = await promptMessage(Msg, message.author, 1, ["✅", "❌"]);
+    const reacted = await promptMessage(
+      Msg,
+      message.author,
+      1,
+      ["✅", "❌"],
+      false
+    );
     if (reacted === "✅") {
       message.author.send(
         `✅Bravo ! Votre demande de Unmute sur ${message.guild.name} à été accepté.`
