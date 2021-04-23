@@ -158,7 +158,8 @@ const addNewMute = (UserToMute, guild) => {
     .then((doc) => {
       if (doc.exists) {
         const Data = doc.data();
-        if (Data.Mute) POSTMute(UserToMute, Data.Mute, guild);
+        if (Data.Mute && Data.Mute.length !== 0)
+          POSTMute(UserToMute, Data.Mute, guild);
         else POSTMute(UserToMute, [], guild);
       } else {
         console.log("No such document!");
