@@ -584,26 +584,17 @@ client.on("message", async (message) => {
   } else {
     CheckMsgImg(guild);
   }
-
-  // Vu Sys
-  // if (message.channel.name === "annonces" && message.author.bot) {
-  //   const EmojiVu = message.guild.emojis.cache.find(
-  //     (emoji) => emoji.name == "Vu"
-  //   );
-  //   message.react(message.guild.emojis.cache.get(EmojiVu.id));
-  //   return;
-  // }
   if (message.author.bot) return;
   // Leveling Sys
   CheckLevelUpUser(message.author.id, guild, message.content.length);
-
+  // Check If URL
   if (
     typeof message.content === "string" &&
     isValidHttpUrl(message.content) &&
     message.channel.name !== "🔗partage" &&
     !message.content.includes(".gif") &&
     !message.content.includes("-gif") &&
-    !message.content.includes("discord.com")
+    !message.content.includes("discord")
   ) {
     const channelPartage = message.guild.channels.cache.find(
       (ch) => ch.name === "🔗partage"
@@ -630,7 +621,22 @@ client.on("message", async (message) => {
     if (message.deletable) message.delete();
     return;
   }
-
+  if (
+    message.channel.name === "muted" &&
+    cmd !== "unmute" &&
+    !message.member.hasPermission("ADMINISTRATOR")
+  ) {
+    if (message.deletable) message.delete();
+    return;
+  }
+  // Vu Sys
+  // if (message.channel.name === "annonces" && message.author.bot) {
+  //   const EmojiVu = message.guild.emojis.cache.find(
+  //     (emoji) => emoji.name == "Vu"
+  //   );
+  //   message.react(message.guild.emojis.cache.get(EmojiVu.id));
+  //   return;
+  // }
   // Distribué
   // const EmojiDistri = message.guild.emojis.cache.find(
   //   (emoji) => emoji.name == "distribuer"
@@ -644,8 +650,8 @@ client.on("message", async (message) => {
   //   });
   // ------
 
+  // CMD
   if (!message.content.startsWith(prefix)) return;
-
   if (cmd === "ping") {
     if (message.deletable) message.delete({ timeout: 5000 });
     const Embed = new MessageEmbed()
