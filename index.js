@@ -207,7 +207,7 @@ const RemoveMute = (UserToUnMute, guild) => {
             if (UserToUnMute === UserMuted.UserID) Data.Mute.splice(i, 1);
           });
           db.collection("guilds").doc(guild).update({
-            Mute: Data,
+            Mute: Data.Mute,
           });
         }
       } else {
