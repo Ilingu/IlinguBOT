@@ -306,7 +306,7 @@ const promptMessage = async (
   validReactions,
   userToReact = true
 ) => {
-  time *= 1000;
+  if (time !== 1) time *= 1000;
 
   for (const reaction of validReactions) await message.react(reaction);
 
@@ -316,7 +316,7 @@ const promptMessage = async (
       : validReactions.includes(reaction.emoji.name) && user.id !== author.id;
 
   return message
-    .awaitReactions(filter, { max: 1, time: time })
+    .awaitReactions(filter, time === 1 ? { max: 1 } : { max: 1, time: time })
     .then((collected) => collected.first() && collected.first().emoji.name);
 };
 
@@ -488,14 +488,16 @@ client.on("guildMemberAdd", async (member) => {
 
   const channel = client.channels.cache.find((ch) => ch.name === "🔥général");
 
-  channel.send(`<@everyone>\nBienvenue <@${member.user.id}> !`);
+  channel.send(
+    `<@${member.guild.roles.everyone}>\nBienvenue <@${member.user.id}> !`
+  );
   channel.send(embed);
 });
 
 client.on("guildMemberRemove", async (member) => {
   const channel = client.channels.cache.find((ch) => ch.name === "🔥général");
   channel.send(
-    `<@everyone>\nSayonara <@${member.user.id}> 😥 (tu nous manqueras pas ^^)`
+    `<@${member.guild.roles.everyone}>\nSayonara <@${member.user.id}> 😥 (tu nous manqueras pas ^^)`
   );
 });
 
@@ -654,10 +656,12 @@ client.on("message", async (message) => {
   } else if (cmd === "unmute") {
     if (message.channel.name !== "muted") return;
     const CanUnMute = await CheckUnMute(message.author.id, guild);
-    if (CanUnMute === "No" || !message.guild.available)
+    if (CanUnMute === "No" || !message.guild.available) {
+      if (message.deletable) message.delete();
       return message.author.send(
         "❌__Failed__❌: Tu n'as pas fini ton temps minimal de mute."
       );
+    }
     message.author.send(
       `✅Réussi !✅ Votre ticket de Unmute a été créé, veuillez attendre que l'un des admin traite votre demande de Unmute.`
     );
@@ -689,7 +693,7 @@ client.on("message", async (message) => {
         .setAuthor(message.author.username, message.author.displayAvatarURL())
         .setFooter(client.user.username, client.user.displayAvatarURL())
     );
-    const reacted = await promptMessage(Msg, message.author, 30, ["✅", "❌"]);
+    const reacted = await promptMessage(Msg, message.author, 1, ["✅", "❌"]);
     if (reacted === "✅") {
       message.author.send(
         `✅Bravo ! Votre demande de Unmute sur ${message.guild.name} à été accepté.`
@@ -715,14 +719,18 @@ client.on("message", async (message) => {
     } else if (TicketChannel.deletable) TicketChannel.delete();
     if (message.deletable) message.delete();
   } else if (cmd === "mute") {
-    if (!message.member.hasPermission("ADMINISTRATOR"))
+    if (!message.member.hasPermission("ADMINISTRATOR")) {
+      if (message.deletable) message.delete();
       return message
         .reply("❌__Failed__❌: You aren't an Administrator of this server.")
         .then((m) => m.delete({ timeout: 5000 }));
-    if (!args[0] || !message.mentions)
+    }
+    if (!args[0] || !message.mentions) {
+      if (message.deletable) message.delete();
       return message
         .reply("❌__Failed__❌: Please give me the user mention to mute.")
         .then((m) => m.delete({ timeout: 6000 }));
+    }
     const UserToMute = message.mentions.users.first().id;
     if (message.guild.available) {
       const MuteRole = message.guild.roles.cache.find(
