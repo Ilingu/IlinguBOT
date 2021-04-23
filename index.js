@@ -2,7 +2,6 @@ const { Client, MessageEmbed, APIMessage } = require("discord.js");
 const { config } = require("dotenv");
 const firebase = require("firebase/app");
 const admin = require("firebase-admin");
-const { promptMessage } = require("./functions");
 const randomPuppy = require("random-puppy");
 const Brainfuck = require("brainfuck-compiler/brainfuck");
 
@@ -28,10 +27,6 @@ Brainfuck.config({ memorySize: 256, bits: 16 });
 const nvt = require("node-virustotal");
 const defaultTimedInstance = nvt.makeAPI();
 defaultTimedInstance.setKey(process.env.VIRUSTOTALTOKEN); // SetKey
-
-// Var
-const chooseArr = ["⛰", "🧻", "✂"];
-const guildCommandsID = "823815537138073610";
 // Fn
 const POSTMessage = (AllMessage, channel, MessageID, guild) => {
   // 172800000 -> Ms of 2days
@@ -141,6 +136,86 @@ const CreateNewImg = (guild, channel, MessageID) => {
     .catch(console.error);
 };
 
+const POSTMute = (UserToMute, Data = [], guild) => {
+  // 900000 -> 15min in MS
+  db.collection("guilds")
+    .doc(guild)
+    .update({
+      Mute: [
+        ...Data,
+        {
+          UserID: UserToMute,
+          UnMute: Date.now() + 900000,
+        },
+      ],
+    });
+};
+
+const addNewMute = (UserToMute, guild) => {
+  db.collection("guilds")
+    .doc(guild)
+    .get()
+    .then((doc) => {
+      if (doc.exists) {
+        const Data = doc.data();
+        if (Data.Mute) POSTMute(UserToMute, Data.Mute, guild);
+        else POSTMute(UserToMute, guild);
+      } else {
+        console.log("No such document!");
+      }
+    })
+    .catch(console.error);
+};
+
+const CheckUnMute = (UserToUnMute, guild) => {
+  return new Promise((resolve, reject) => {
+    db.collection("guilds")
+      .doc(guild)
+      .get()
+      .then((doc) => {
+        if (doc.exists) {
+          const Data = doc.data().Mute;
+          if (!Data) return resolve(true);
+          let IsUnMute = false;
+          Data.forEach((UserMute) => {
+            if (
+              UserMute.UserID === UserToUnMute &&
+              UserMute.UnMute <= Date.now()
+            ) {
+              IsUnMute = true;
+            }
+          });
+          resolve(IsUnMute);
+        } else {
+          reject(false);
+        }
+      })
+      .catch(() => reject(false));
+  });
+};
+
+const RemoveMute = (UserToUnMute, guild) => {
+  db.collection("guilds")
+    .doc(guild)
+    .get()
+    .then((doc) => {
+      if (doc.exists) {
+        const Data = doc.data();
+        if (Data.Mute) {
+          Data.Mute.forEach((UserMuted, i) => {
+            if (UserToUnMute === UserMuted.UserID) Data.Mute.splice(i, 1);
+          });
+          db.collection("guilds").doc(guild).update({
+            Mute: Data,
+          });
+        }
+      } else {
+        console.log("No such document!");
+      }
+    })
+    .catch(console.error);
+};
+
 const GetLevel = (guild) => {
   return new Promise((resolve, reject) => {
     db.collection("guilds")
@@ -222,6 +297,27 @@ const CheckLevelUpUser = async (User, guild, MessageLength) => {
   } catch (err) {
     console.error(err);
   }
+};
+
+const promptMessage = async (
+  message,
+  author,
+  time,
+  validReactions,
+  userToReact = true
+) => {
+  time *= 1000;
+
+  for (const reaction of validReactions) await message.react(reaction);
+
+  const filter = (reaction, user) =>
+    userToReact
+      ? validReactions.includes(reaction.emoji.name) && user.id === author.id
+      : validReactions.includes(reaction.emoji.name) && user.id !== author.id;
+
+  return message
+    .awaitReactions(filter, { max: 1, time: time })
+    .then((collected) => collected.first() && collected.first().emoji.name);
 };
 
 function isValidHttpUrl(string) {
@@ -437,6 +533,7 @@ client.on("guildCreate", async (gData) => {
           guildName: gData.name,
           messageImageToSuppr: [],
           levels: {},
+          Mute: [],
         });
       } else {
         msg.edit(
@@ -554,6 +651,96 @@ client.on("message", async (message) => {
       .addField("⏳__You:__", `**${Date.now() - message.createdTimestamp}**ms`)
       .addField("⏱__BOT__", `*${Math.round(client.ws.ping)}*ms`);
     message.channel.send(Embed);
+  } else if (cmd === "unmute") {
+    if (message.channel.name !== "muted") return;
+    const CanUnMute = await CheckUnMute(message.author.id, guild);
+    if (!CanUnMute || !message.guild.available)
+      return message.author.send(
+        "❌__Failed__❌: Tu n'as pas fini ton temps minimal de mute."
+      );
+    message.author.send(
+      `✅Réussi !✅ Votre ticket de Unmute a été créé, veuillez attendre que l'un des admin traite votre demande de Unmute.`
+    );
+    const TicketChannel = await message.guild.channels.create(
+      `ticket-${message.author.id.slice(0, 4)}`,
+      {
+        type: "text",
+        permissionOverwrites: [
+          {
+            id: message.author.id,
+            deny: ["SEND_MESSAGES", "ADD_REACTIONS", "CREATE_INSTANT_INVITE"],
+            allow: ["VIEW_CHANNEL"],
+          },
+          {
+            id: message.guild.roles.everyone,
+            deny: ["VIEW_CHANNEL"],
+          },
+        ],
+      }
+    );
+    const Msg = await TicketChannel.send(
+      new MessageEmbed()
+        .setColor(0xffc300)
+        .setTitle(`Un Mute <@${message.author.id}> ?`)
+        .setDescription(
+          `${message.author.username} vous demande la permissions d'être Unmute\n✅: Accepter le Unmute\n❌: Refuser le Unmute`
+        )
+        .setTimestamp()
+        .setAuthor(message.author.username, message.author.displayAvatarURL())
+        .setFooter(client.user.username, client.user.displayAvatarURL())
+    );
+    const reacted = await promptMessage(Msg, message.author, 30, ["✅", "❌"]);
+    if (reacted === "✅") {
+      message.author.send(
+        `✅Bravo ! Votre demande de Unmute sur ${message.guild.name} à été accepté.`
+      );
+      const MuteRole = message.guild.roles.cache.find(
+        (role) => role.name === "Mute"
+      );
+      const RoleOnTest = message.guild.roles.cache.find(
+        (role) => role.name === "G@m3r On Test"
+      );
+      const UserInteract = message.guild.members.cache.find(
+        (us) => us.id === message.author.id
+      ).roles;
+      UserInteract.remove(MuteRole);
+      UserInteract.add(RoleOnTest);
+      RemoveMute(message.author.id, guild);
+      if (TicketChannel.deletable) TicketChannel.delete();
+    } else if (reacted === "❌" && TicketChannel.deletable) {
+      message.author.send(
+        `❌Malheuresement votre demande de Unmute sur ${message.guild.name} à été rejeté.`
+      );
+      TicketChannel.delete();
+    } else if (TicketChannel.deletable) TicketChannel.delete();
+    if (message.deletable) message.delete();
+  } else if (cmd === "mute") {
+    if (!message.member.hasPermission("ADMINISTRATOR"))
+      return message
+        .reply("❌__Failed__❌: You aren't an Administrator of this server.")
+        .then((m) => m.delete({ timeout: 5000 }));
+    if (!args[0] || !message.mentions)
+      return message
+        .reply("❌__Failed__❌: Please give me the user mention to mute.")
+        .then((m) => m.delete({ timeout: 6000 }));
+    const UserToMute = message.mentions.users.first().id;
+    if (message.guild.available) {
+      const MuteRole = message.guild.roles.cache.find(
+        (role) => role.name === "Mute"
+      );
+      const UserInteract = message.guild.members.cache.find(
+        (us) => us.id === UserToMute
+      ).roles;
+      UserInteract.cache.forEach((role) => {
+        UserInteract.remove(role);
+      });
+      UserInteract.add(MuteRole);
+      addNewMute(UserToMute, guild);
+      message.author.send(
+        `Vous avez été **__mute__** de ${message.guild.name} pendant __15min__.\nPour Unmute veuillez suivre les instruction de ce serveur.`
+      );
+    }
+    if (message.deletable) message.delete();
   } else if (cmd === "check") {
     if (message.channel.name !== "🤖commandes-bot") {
       if (message.deletable) message.delete();
@@ -580,7 +767,7 @@ client.on("message", async (message) => {
       const msg = await message.channel.send(
         `Processing..., vérification de l'url en cours, veuillez patienté (~30s)`
       );
-      const URLChecker = defaultTimedInstance.urlLookup(hashed, (err, res) => {
+      defaultTimedInstance.urlLookup(hashed, (err, res) => {
         if (err) {
           msg.edit(
             `( <@${message.author.id}> )\n❌ERREUR❌pour une raison inconnu, il m'est impossible de vérifier cette url, réessaie ultérieument.`
@@ -683,6 +870,7 @@ client.on("message", async (message) => {
       message.channel.send(args.join(" "));
     }
   } else if (cmd === "rps") {
+    const chooseArr = ["⛰", "🧻", "✂"];
     if (message.channel.name !== "🤖commandes-bot") {
       if (message.deletable) message.delete();
       const channelCmdBotID = message.guild.channels.cache.find(
