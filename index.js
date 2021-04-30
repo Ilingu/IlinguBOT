@@ -300,6 +300,15 @@ const CheckLevelUpUser = async (User, guild, MessageLength) => {
   }
 };
 
+const GetXpOfDiff = (NbOfDiff, UserLvl) => {
+  let result = 0;
+  for (let index = 0; index < NbOfDiff; index++) {
+    result += 150 * UserLvl;
+    UserLvl++;
+  }
+  return result;
+};
+
 const promptMessage = async (
   message,
   author,
@@ -954,8 +963,16 @@ client.on("message", async (message) => {
         .then((m) => m.delete({ timeout: 12000 }));
     }
     let UserLvl = null;
-    let Mention = false;
-    if (args[0] && message.mentions) {
+    let Mention = false,
+      Compare = false;
+    if (args[0] && args[0] === "compareWith" && args[1] && message.mentions) {
+      Compare = true;
+      const Result = await GetLevel(guild);
+      UserLvl = [
+        Result[message.author.id],
+        Result[message.mentions.users.first().id],
+      ];
+    } else if (args[0] && message.mentions) {
       Mention = true;
       UserLvl = (await GetLevel(guild))[message.mentions.users.first().id];
     } else UserLvl = (await GetLevel(guild))[message.author.id];
@@ -963,20 +980,64 @@ client.on("message", async (message) => {
     const Embed = new MessageEmbed()
       .setColor(0xffc300)
       .setTitle(
-        `⭕Niveau de ${
-          !Mention
-            ? message.author.username
-            : message.mentions.users.first().username
+        `⭕${
+          Compare
+            ? `Comparaison des niveau entre ${
+                message.mentions.users.first().username
+              } et ${message.author.username}`
+            : `Niveau de ${
+                !Mention
+                  ? message.author.username
+                  : message.mentions.users.first().username
+              }`
         }⭕`
       )
       .setDescription(
-        `**Ton niveau**: __${UserLvl.lvl}__\n**Ton XP**: __${
-          UserLvl.xp
-        }__\n**Info**:\n- XP minimum pour lvl supérieur: __${
-          150 * UserLvl.lvl
-        }__\n- Progression: __${Math.round(
-          (UserLvl.xp / (150 * UserLvl.lvl)) * 100
-        )}%__\n- Nombres de messages au total: __${UserLvl.nbMsg}__`
+        Compare
+          ? `**Niveau**: ${
+              Math.sign(UserLvl[0].lvl - UserLvl[1].lvl) <= 0
+                ? `${message.mentions.users.first().username} a __${
+                    UserLvl[1].lvl - UserLvl[0].lvl
+                  }__ niveaux de plus que toi`
+                : `Tu as __${
+                    UserLvl[0].lvl - UserLvl[1].lvl
+                  }__ niveau de plus que ${
+                    message.mentions.users.first().username
+                  }`
+            }\n **Info**:\n- ${
+              Math.sign(UserLvl[0].lvl - UserLvl[1].lvl) <= 0
+                ? `Nombre d'XP pour atteindre le niveau de ${
+                    message.mentions.users.first().username
+                  }: __${
+                    GetXpOfDiff(
+                      UserLvl[1].lvl - UserLvl[0].lvl,
+                      UserLvl[0].lvl
+                    ) + UserLvl[1].xp
+                  }__`
+                : `Nombre d'XP pour que ${
+                    message.mentions.users.first().username
+                  } atteigne ton niveau: __${
+                    GetXpOfDiff(
+                      UserLvl[0].lvl - UserLvl[1].lvl,
+                      UserLvl[1].lvl
+                    ) + UserLvl[0].xp
+                  }__`
+            }\n- Nombre de message:\n   -${
+              message.mentions.users.first().username
+            }: __${UserLvl[1].nbMsg}__\n    -${message.author.username}: __${
+              UserLvl[0].nbMsg
+            }__\n     -Différence: __${
+              Math.sign(UserLvl[0].nbMsg - UserLvl[1].nbMsg) <= 0
+                ? UserLvl[1].nbMsg - UserLvl[0].nbMsg
+                : UserLvl[0].nbMsg - UserLvl[1].nbMsg
+            }__`
+          : `**Ton niveau**: __${UserLvl.lvl}__\n**Ton XP**: __${
+              UserLvl.xp
+            }__\n**Info**:\n- XP minimum pour lvl supérieur: __${
+              150 * UserLvl.lvl
+            }__\n- Progression: __${Math.round(
+              (UserLvl.xp / (150 * UserLvl.lvl)) * 100
+            )}%__\n- Nombres de messages au total: __${UserLvl.nbMsg}__`
       )
       .setTimestamp()
       .setAuthor(message.author.username, message.author.displayAvatarURL())
