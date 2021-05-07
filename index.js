@@ -414,6 +414,7 @@ const createAPIMessage = async (interaction, content) => {
 // Cron
 const rule = new schedule.RecurrenceRule();
 rule.hour = 0;
+rule.minute = 28;
 rule.tz = "Europe/Paris";
 
 const job = schedule.scheduleJob(rule, function () {
@@ -426,7 +427,6 @@ const job = schedule.scheduleJob(rule, function () {
       `||Auto Test||\n||${new Date().toLocaleString()}||\n||Run ID ${Date.now()}||`
     );
 });
-console.log(job);
 // BOT
 client.on("ready", async () => {
   console.log(`I'm now online, my name is ${client.user.username}`);
