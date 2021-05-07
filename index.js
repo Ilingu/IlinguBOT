@@ -414,7 +414,7 @@ const createAPIMessage = async (interaction, content) => {
 // Cron
 const rule = new schedule.RecurrenceRule();
 rule.hour = 0;
-rule.tz = "Etc/UTC";
+rule.tz = "Europe/Paris";
 
 const job = schedule.scheduleJob(rule, function () {
   client.guilds.cache.forEach((guild) => {
