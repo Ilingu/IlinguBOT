@@ -414,18 +414,14 @@ const createAPIMessage = async (interaction, content) => {
 // Cron
 const rule = new schedule.RecurrenceRule();
 rule.hour = 0;
-rule.minute = 28;
+rule.minute = 10;
 rule.tz = "Europe/Paris";
 
 const job = schedule.scheduleJob(rule, function () {
   client.guilds.cache.forEach((guild) => {
     CheckMsgImg(guild.id);
   });
-  client.channels.cache
-    .find((ch) => ch.name === "🔥général")
-    .send(
-      `||Auto Test||\n||${new Date().toLocaleString()}||\n||Run ID ${Date.now()}||`
-    );
+  console.log(`Auto Test du ${new Date().toLocaleString()} (${Date.now()})`);
 });
 // BOT
 client.on("ready", async () => {
