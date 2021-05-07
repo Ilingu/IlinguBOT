@@ -2,6 +2,7 @@ const { Client, MessageEmbed, APIMessage } = require("discord.js");
 const { config } = require("dotenv");
 const firebase = require("firebase/app");
 const admin = require("firebase-admin");
+const schedule = require("node-schedule");
 const randomPuppy = require("random-puppy");
 const Brainfuck = require("brainfuck-compiler/brainfuck");
 
@@ -410,7 +411,21 @@ const createAPIMessage = async (interaction, content) => {
 
   return { ...data, files };
 };
+// Cron
+const rule = new schedule.RecurrenceRule();
+rule.hour = 0;
+rule.minute = 0;
 
+schedule.scheduleJob(rule, () => {
+  client.guilds.cache.forEach((guild) => {
+    CheckMsgImg(guild.id);
+  });
+  client.channels.cache
+    .find((ch) => ch.name === "🔥général")
+    .send(
+      `||Auto Test||\n||${new Date().toLocaleString()}||\n||Run ID ${Date.now()}||`
+    );
+});
 // BOT
 client.on("ready", async () => {
   console.log(`I'm now online, my name is ${client.user.username}`);
