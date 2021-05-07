@@ -413,11 +413,10 @@ const createAPIMessage = async (interaction, content) => {
 };
 // Cron
 const rule = new schedule.RecurrenceRule();
-rule.dayOfWeek = [0, new schedule.Range(1, 6)];
 rule.hour = 0;
-rule.minute = 10;
+rule.tz = "Etc/UTC";
 
-schedule.scheduleJob(rule, () => {
+const job = schedule.scheduleJob(rule, function () {
   client.guilds.cache.forEach((guild) => {
     CheckMsgImg(guild.id);
   });
@@ -427,6 +426,7 @@ schedule.scheduleJob(rule, () => {
       `||Auto Test||\n||${new Date().toLocaleString()}||\n||Run ID ${Date.now()}||`
     );
 });
+console.log(job);
 // BOT
 client.on("ready", async () => {
   console.log(`I'm now online, my name is ${client.user.username}`);
