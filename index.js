@@ -589,16 +589,15 @@ client.on("message", async (message) => {
   const args = message.content.slice(prefix.length).trim().split(/ +/g);
   const cmd = args.shift().toLowerCase();
 
+  if (message.author.bot) return;
+  // DM
   if (!message.guild) {
-    // DM
-    if (message.author.bot) return;
     if (!message.content.startsWith(prefix))
       return message.reply(
         "Comment te dire que t'es dans mon espace privée là... Baaaaaka\n Genre on ta jamais appris à respecter la vie privée des gens."
       );
     return;
   }
-
   // Img Suppr
   const guild = message.guild.id,
     channel = message.channel.id,
@@ -608,7 +607,6 @@ client.on("message", async (message) => {
   } else {
     CheckMsgImg(guild);
   }
-  if (message.author.bot) return;
   // Leveling Sys
   CheckLevelUpUser(message.author.id, guild, message.content.length);
   // Check If URL
