@@ -1054,7 +1054,7 @@ client.on("message", async (message) => {
       .setFooter(client.user.username, client.user.displayAvatarURL());
 
     message.channel.send(Embed);
-  } else if (cmd === "encrypt") {
+  } else if (cmd === "decrypt") {
     if (message.deletable) message.delete();
     if (args.length < 1)
       return message
@@ -1088,6 +1088,7 @@ client.on("message", async (message) => {
       _meme: (à faire dans le salon meme) met un meme aléatoirement
       _rda x x: te donne un nombre aléatoirement entre le 1er x et le 2ème, ex: _rda 5 8 (nombre aléatoire entre 5 et 8)
       _timer <time> (ex: _timer 1min30s / _timer 120s), MAXIMUN = 2H/MINIMUM = 10S
+      +PLEIN D'EASTER EGGS (parce qu'on adore ça)
     `
       )
       .setTimestamp()
