@@ -1066,7 +1066,11 @@ client.on("message", async (message) => {
     Compiled.run("", (num, char) => {
       buf = [...buf, char];
     });
-    message.channel.send(buf.join(""));
+    if (buf.join("").includes("_block"))
+      message.channel.send(
+        "Ce message a été blocké, si tu veux le decrypter t'a cas être un EPIC DEV"
+      );
+    else message.channel.send(buf.join(""));
   } else if (cmd === "help") {
     if (message.deletable) message.delete();
     const Embed = new MessageEmbed()
