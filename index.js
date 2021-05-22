@@ -1320,7 +1320,9 @@ client.on("message", async (message) => {
         .then((m) => m.delete({ timeout: 15000 }));
     }
   } else {
-    if (message.deletable) message.delete();
+    message.channel
+      .send("Commande Inexistante.")
+      .then((m) => m.delete({ timeout: 2500 }));
   }
 });
 
