@@ -421,11 +421,13 @@ const job = schedule.scheduleJob(rule, function () {
   client.guilds.cache.forEach((guild) => {
     CheckMsgImg(guild.id);
   });
-  console.log(`Auto Test du ${new Date().toLocaleString()} (${Date.now()})`);
+  console.log(`Auto Test du ${Date.now()}`);
 });
 // BOT
 client.on("ready", async () => {
-  console.log(`I'm now online, my name is ${client.user.username}`);
+  console.log(
+    `I'm now online, my name is ${client.user.username}, ${Date.now()}`
+  );
   client.user.setActivity("du porno ^^", {
     type: "WATCHING",
   });
