@@ -249,7 +249,7 @@ const LevelUp = (User, guild, Data, MessageLength) => {
   // If last user message is under 1min -> return
   if (
     AllData[User].LastMessageTime &&
-    Date.now() - AllData[User].LastMessageTime < 60000
+    Date.now() - AllData[User].LastMessageTime < 10000
   )
     return;
   // ADD
